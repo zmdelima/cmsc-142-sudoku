@@ -95,12 +95,6 @@
           value: true,
         },
         
-        tableload: {
-          type: Boolean,
-          value: true,
-          notify: true,
-        }
-        
         
       },
       
@@ -108,9 +102,10 @@
       },
       
       randomize: function() {
+        console.log(this.loading);
         this.loading = !this.loading;
         this.$.sudokuElement.updating = !this.$.sudokuElement.updating;
-        this.$.sudokuElement.loading = !this.$.sudokuElement.loading;
+        // this.$.sudokuElement.loading = !this.$.sudokuElement.loading;
         let w = new Worker("/src/js/worker.js");
         w.postMessage([9,false,false,0]);
         w.onmessage = function(e) {
@@ -119,7 +114,6 @@
           this.$.random.disabled = false;
           this.loading = !this.loading;
           this.$.sudokuElement.updating = !this.$.sudokuElement.updating;
-          this.$.sudokuElement.loading = !this.$.sudokuElement.loading;
         }.bind(this);
       },
       
@@ -127,6 +121,7 @@
         //Load the current table to to a 2d array
         if (this.$.sudokuElement.check(9, false, false)) {
           this.$.successToast.open();
+          this.randomize();
         } else this.$.errorToast.open();
       }
 
