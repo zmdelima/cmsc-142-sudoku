@@ -4,6 +4,9 @@
 <dom-module id="sudoku-table">
     <template>
         <style>
+            :host {
+                font-family: 'Open Sans', sans-serif;
+            }
             #sudokuTable {
                 margin: auto;
                 /*border-spacing: 0;*/
@@ -22,9 +25,7 @@
                 margin-top: 10px;
             }
             
-            .text {
-                font-family: 'Open Sans', sans-serif;
-            }
+            
             
             
             
@@ -33,7 +34,7 @@
         
         </table>
         <div class="loadingDiv" hidden$="{{!loading}}">
-            <h4 class="text">Generating your puzzle faster than Zydrick can break computers.</h1>
+            <h4>Generating your puzzle faster than Zydrick can break computers.</h1>
             <paper-spinner id="spinner" active></paper-spinner>
         </div>
     </template>
@@ -58,6 +59,11 @@
                
                tableload: {
                    type: Boolean,
+                   notify: true,
+               },
+               
+               count: {
+                   type: Number,
                    notify: true,
                }
            },
@@ -117,9 +123,11 @@
                       this.loading = !this.loading;
                       this.tableload = !this.tableload;
                   }
+                  this.count++;
               }.bind(this);
             //   this.board = generatePuzzle(generateBoard(9, false,false), 40);
               
+                
               
            },
            
