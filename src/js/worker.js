@@ -75,7 +75,7 @@ var checker = function(board,row,col,val,chkX,chkY){
 
 let viewBoard = function(board) {
     for(let i=0; i<board.length; i++) {
-        console.log(board[i]);
+        // console.log(board[i]);
     }
 }
 
@@ -100,7 +100,7 @@ function generateRange(dim) {
 
 let generateBoard = function(dim, chkX, chkY) {
     if (Math.sqrt(dim) % 1 != 0) {
-        console.log("Entered dimension is not a perfect square.");
+        // console.log("Entered dimension is not a perfect square.");
         return;
     }
     let board = new Array(dim);
@@ -146,9 +146,9 @@ let generateBoard = function(dim, chkX, chkY) {
                         
                     }
                     //Reset i to the index of the previous position's current value
-                    console.log("Currently at position "+X+","+Y);
-                    console.log(selection);
-                    console.log(selection.indexOf(board[X][Y]))
+                    // console.log("Currently at position "+X+","+Y);
+                    // console.log(selection);
+                    // console.log(selection.indexOf(board[X][Y]))
                     i = selection.indexOf(board[X][Y]);
                     board[X][Y]=0;
                 } while(i == selection.length-1);    
@@ -159,7 +159,7 @@ let generateBoard = function(dim, chkX, chkY) {
         
         
         viewBoard(board);
-        console.log("----");
+        // console.log("----");
         
         
         
@@ -188,7 +188,7 @@ let generatePuzzle = function (board, difficulty) {
 }
 
 onmessage = function(e) {
-    console.log("received "+e.data[0]);
+    // console.log("received "+e.data[0]);
     postMessage(generatePuzzle(generateBoard(e.data[0], e.data[1], e.data[2]), e.data[3]));
 }
 
