@@ -1,0 +1,110 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+
+<dom-module id="sudoku-table">
+    <template>
+        <style>
+            #sudokuTable {
+                margin: auto;
+                /*border-spacing: 0;*/
+                border-collapse: collapse;
+                width: 400px;
+            }
+            
+            
+            
+        </style>
+        <table id="sudokuTable">
+        
+        </table>
+        <paper-spinner id="spinner" active></paper-spinner>
+    </template>
+    <script>
+        Polymer({
+           is: 'sudoku-table',
+           properties: {
+               board: {
+                   type: Array,
+                   notify: true,
+               }
+           },
+           
+           ready: function() {
+              let w = new Worker("/src/js/worker.js");
+              w.postMessage([9,false,false,20]);
+              
+              w.onmessage = function(e) {
+                  console.log(e.data);
+                  this.board=e.data;
+                  N = this.board.length;
+                  for (i=0; i<N; i++) {
+                      let tr = document.createElement('tr');
+                      for (j=0; j<N; j++) {
+                          let td = document.createElement('td');
+                          let input = document.createElement('input');
+                          if (this.board[i][j] != 0) {
+                            input.setAttribute('value', this.board[i][j]);
+                          }
+                          
+                          input.setAttribute('maxlength', 1);
+                          input.style.width = "100%";
+                          input.style.border = "solid 0 #fff";
+                          input.style.textAlign = "center";
+                          input.style.fontFamily = "'Open Sans', sans-serif";
+                          input.style.fontSize = "150%";
+                          input.style.padding = "0";
+                          
+                          if (this.board[i][j] == 0) {
+                              input.style.color = "blue";
+                          }
+                          
+                          
+                          td.style.border = "#DDDDEE solid 2px";
+                          
+                          if (i % Math.sqrt(N) == 0) {
+                              td.style.borderTop = "#b71c1c solid 3px";
+                          }
+                          
+                          if (i == N-1) {
+                              td.style.borderBottom = "#b71c1c solid 3px";
+                          }
+                          
+                          if (j % Math.sqrt(N) == 0) {
+                              td.style.borderLeft = "#b71c1c solid 3px";
+                          }
+                          
+                          if (j == N-1) {
+                              td.style.borderRight = "#b71c1c solid 3px";
+                          }
+                        
+                          td.appendChild(input);
+                          tr.appendChild(td);
+                      }
+                      this.$.sudokuTable.appendChild(tr);
+                  }
+              }.bind(this);
+            //   this.board = generatePuzzle(generateBoard(9, false,false), 40);
+              
+              
+           },
+           
+           updateValues: function(board) {
+               let N = board.length; 
+               //Update each cell
+               for (let i=0; i<N; i++) {
+                   for (let j=0; j<N; j++) {
+                       if (board[i][j] == 0) {
+                            this.$.sudokuTable.rows[i].cells[j].childNodes[0].value = "";
+                           this.$.sudokuTable.rows[i].cells[j].childNodes[0].style.color = "blue";
+                       } else {
+                            this.$.sudokuTable.rows[i].cells[j].childNodes[0].value = board[i][j];
+                           this.$.sudokuTable.rows[i].cells[j].childNodes[0].style.color = "black";
+                       }
+                   }
+               }
+               
+               
+           }
+        });
+    </script>
+</dom-module>

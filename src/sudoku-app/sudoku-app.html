@@ -1,0 +1,86 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<link rel="import" href="sudoku-table.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+
+<dom-module id="sudoku-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      
+      .title {
+        font-size: 500%;
+        font-family: 'Open Sans', sans-serif;
+        margin-bottom: 0;
+        margin-top: 0;
+      }
+      
+      .subtitle {
+        font-family: 'Open Sans', sans-serif;
+      }
+      
+      .container {
+        margin: auto;
+        width: 800px;
+        text-align: center;
+      }
+      
+      #random {
+        background-color: maroon;
+        color: white;
+        font-family: 'Open Sans', sans-serif;
+      }
+      
+      .button-set {
+        margin: auto;
+        width: 100%;
+      }
+    </style>
+    <h1 class="title" align="center">sudoku</h1>
+    <h1 class="subtitle" align="center">Fresh and random Sudoku puzzles made every click.</h6>
+    <br>
+    <div class="container">
+      <sudoku-table id="sudokuElement" board="[[board]]">
+      
+      </sudoku-table>
+      <br>
+      <paper-button on-tap="randomize" id="random" raised>Random</paper-button>
+    </div>
+  </template>
+  <script type="text/javascript" src="../js/main.js"></script>
+  <script>
+    Polymer({
+
+      is: 'sudoku-app',
+
+      properties: {
+        prop1: {
+          type: String,
+          value: 'sudoku-app',
+        },
+        
+        board: {
+          type: Array,
+          notify: true,
+        }
+      },
+      
+      ready: function() {
+      },
+      
+      randomize: function() {
+        let w = new Worker("/src/js/worker.js");
+        w.postMessage([9,false,false,20]);
+        w.onmessage = function(e) {
+          this.board = e.data;
+          this.$.sudokuElement.updateValues(this.board);  
+        }.bind(this);
+        
+      }
+
+    });
+  </script>
+</dom-module>
