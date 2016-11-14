@@ -6,7 +6,7 @@
 
 <dom-module id="sudoku-app">
   <template>
-    <style>
+    <style is="custom-style">
       :host {
         display: block;
       }
@@ -28,9 +28,20 @@
         text-align: center;
       }
       
-      #random {
-        background-color: maroon;
+      /*.button {*/
+      /*  background-color: maroon;*/
+      /*  color: white;*/
+      /*  font-family: 'Open Sans', sans-serif;*/
+      /*}*/
+      
+      paper-button {
+        background: maroon;
         color: white;
+        font-family: 'Open Sans', sans-serif;
+      }
+      
+      --paper-button-disabled {
+        background: black;
         font-family: 'Open Sans', sans-serif;
       }
       
@@ -47,7 +58,8 @@
       
       </sudoku-table>
       <br>
-      <paper-button on-tap="randomize" id="random" raised>Random</paper-button>
+      <paper-button on-tap="randomize" id="random" class="button" disabled$={{loading}} raised>Random</paper-button>
+      <paper-button on-tap="check" id="check" class ="button" raised>Check</paper-button>
     </div>
   </template>
   <script type="text/javascript" src="../js/main.js"></script>
@@ -65,6 +77,11 @@
         board: {
           type: Array,
           notify: true,
+        },
+        
+        loading: {
+          type: Boolean,
+          value: false,
         }
       },
       
@@ -72,13 +89,24 @@
       },
       
       randomize: function() {
+        this.loading = !this.loading;
+        this.$.sudokuElement.updating = !this.$.sudokuElement.updating;
+        this.$.sudokuElement.loading = !this.$.sudokuElement.loading;
         let w = new Worker("/src/js/worker.js");
-        w.postMessage([9,false,false,20]);
+        w.postMessage([9,false,false,0]);
         w.onmessage = function(e) {
           this.board = e.data;
           this.$.sudokuElement.updateValues(this.board);  
+          this.$.random.disabled = false;
+          this.loading = !this.loading;
+          this.$.sudokuElement.updating = !this.$.sudokuElement.updating;
+          this.$.sudokuElement.loading = !this.$.sudokuElement.loading;
         }.bind(this);
-        
+      },
+      
+      check: function() {
+        //Load the current table to to a 2d array
+        if (this.$.sudokuElement.check(9, false, false)) console.log("yay");
       }
 
     });

@@ -11,13 +11,31 @@
                 width: 400px;
             }
             
+            .loadingDiv {
+                display:flex;
+                justify-content:center;
+                align-items:center;
+                height:340px;
+            }
+            
+            #spinner {
+                margin-top: 10px;
+            }
+            
+            .text {
+                font-family: 'Open Sans', sans-serif;
+            }
+            
             
             
         </style>
-        <table id="sudokuTable">
+        <table hidden$="{{!updating}}" id="sudokuTable">
         
         </table>
-        <paper-spinner id="spinner" active></paper-spinner>
+        <div class="loadingDiv" hidden$="{{!loading}}">
+            <h4 class="text">Generating your puzzle faster than Zydrick can break computers.</h1>
+            <paper-spinner id="spinner" active></paper-spinner>
+        </div>
     </template>
     <script>
         Polymer({
@@ -26,7 +44,17 @@
                board: {
                    type: Array,
                    notify: true,
-               }
+               },
+               
+               loading: {
+                   type: Boolean,
+                   value: true,
+               },
+               
+               updating: {
+                   type: Boolean,
+                   value: true,
+               },
            },
            
            ready: function() {
@@ -34,7 +62,6 @@
               w.postMessage([9,false,false,20]);
               
               w.onmessage = function(e) {
-                  console.log(e.data);
                   this.board=e.data;
                   N = this.board.length;
                   for (i=0; i<N; i++) {
@@ -44,6 +71,7 @@
                           let input = document.createElement('input');
                           if (this.board[i][j] != 0) {
                             input.setAttribute('value', this.board[i][j]);
+                            input.setAttribute('readonly', 'readonly');
                           }
                           
                           input.setAttribute('maxlength', 1);
@@ -81,6 +109,7 @@
                           tr.appendChild(td);
                       }
                       this.$.sudokuTable.appendChild(tr);
+                      this.loading = !this.loading;
                   }
               }.bind(this);
             //   this.board = generatePuzzle(generateBoard(9, false,false), 40);
@@ -104,6 +133,36 @@
                }
                
                
+           },
+           
+           check: function(dim, chkX, chkY) {
+               let board = new Array(dim);
+               let error = false;
+               
+               //Initialize blank 2d Array 
+               for (let i=0; i<dim; i++) {
+                   board[i] = new Array(dim);
+               }
+               
+               for (let i=0; i<dim; i++) {
+                   for (let j=0; j<dim; j++) {
+                       board[i][j] = this.$.sudokuTable.rows[i].cells[j].childNodes[0].value;
+                   }
+               }
+               
+               for (let i=0; i<dim; i<i++) {
+                   for (let j=0; j<dim; j++) {
+                       let curr = board[i][j];
+                       this.$.sudokuTable.rows[i].cells[j].childNodes[0].style.backgroundColor = "white";
+                       board[i][j]=0;
+                       if(!checker(board, i, j, curr, chkX, chkY)) {
+                           this.$.sudokuTable.rows[i].cells[j].childNodes[0].style.backgroundColor = "red";
+                           error = true;
+                       }
+                       board[i][j] = curr;
+                   }
+               }
+               return (error ? false : true);
            }
         });
     </script>

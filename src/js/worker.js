@@ -18,10 +18,6 @@ let four = [
         [0,0,0,0],
     ];
 
-let populateTable = function() {
-    console.log("damn");
-}
-
 var checkBox = function (board,row,col,val)  {
     let N = board.length;
     let boxMax = Math.sqrt(N);
