@@ -156,7 +156,9 @@
                        this.$.sudokuTable.rows[i].cells[j].childNodes[0].style.backgroundColor = "white";
                        board[i][j]=0;
                        if(!checker(board, i, j, curr, chkX, chkY)) {
-                           this.$.sudokuTable.rows[i].cells[j].childNodes[0].style.backgroundColor = "red";
+                           if (curr != 0) {
+                                this.$.sudokuTable.rows[i].cells[j].childNodes[0].style.backgroundColor = "red";
+                           }
                            error = true;
                        }
                        board[i][j] = curr;
