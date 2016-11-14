@@ -1,0 +1,7 @@
+{
+  "name": "sudoku-app",
+  "short_name": "sudoku-app",
+  "description": "Sudoku APp",
+  "start_url": "/",
+  "display": "standalone"
+}

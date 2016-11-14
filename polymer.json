@@ -1,0 +1,15 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/sudoku-app/sudoku-app.html",
+  "fragments": [
+    
+  ],
+  "sourceGlobs": [
+   "src/**/*",
+   "bower.json"
+  ],
+  "includeDependencies": [
+    "manifest.json",
+    "bower_components/webcomponentsjs/webcomponents-lite.min.js"
+  ]
+}

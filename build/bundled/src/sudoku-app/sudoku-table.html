@@ -1,7 +1,7 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
-<dom-module id="sudoku-table">
+</head><body><dom-module id="sudoku-table">
     <template>
         <style>
             :host {
@@ -34,8 +34,8 @@
         
         </table>
         <div class="loadingDiv" hidden$="{{!loading}}">
-            <h4>Generating your puzzle faster than Zydrick can break computers.</h1>
-            <paper-spinner id="spinner" active></paper-spinner>
+            <h4>Generating your puzzle faster than Zydrick can break computers.</h4>
+            <paper-spinner id="spinner" active=""></paper-spinner>
         </div>
     </template>
     <script>
@@ -123,7 +123,7 @@
                       this.loading = !this.loading;
                       this.tableload = !this.tableload;
                   }
-                //   this.count++;
+                  this.count++;
               }.bind(this);
             //   this.board = generatePuzzle(generateBoard(9, false,false), 40);
               
@@ -183,4 +183,4 @@
            }
         });
     </script>
-</dom-module>
+</dom-module></body></html>

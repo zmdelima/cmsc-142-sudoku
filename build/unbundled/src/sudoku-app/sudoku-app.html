@@ -1,0 +1,160 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<link rel="import" href="sudoku-table.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/polymerfire/polymerfire.html">
+
+</head><body><dom-module id="sudoku-app">
+  <template>
+    <firebase-app auth-domain="cmsc-142-sudoku.firebaseapp.com" database-url="https://cmsc-142-sudoku.firebaseio.com" api-key="AIzaSyCrF6vpEbHdwptFB-NWvGHh83v6oTKqdyI">
+    </firebase-app>
+    <firebase-document id="document" path="/sudoku/count" data="{{count}}">
+      
+    </firebase-document>
+    
+    <style is="custom-style">
+      :host {
+        display: block;
+        font-family: 'Open Sans', sans-serif;
+      }
+      
+      .title {
+        font-size: 500%;
+        margin-bottom: 0;
+        margin-top: 0;
+      }
+      
+      .subtitle {
+        margin-bottom: 10px;
+      }
+      
+      .count {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+      
+      .container {
+        margin: auto;
+        width: 800px;
+        text-align: center;
+      }
+      
+      #errorToast {
+        --paper-toast-background-color: maroon;
+        --paper-toast-color: white;
+      }
+      #successToast {
+        --paper-toast-background-color: green;
+        --paper-toast-color: white;
+      }
+      
+      
+      /*.button {*/
+      /*  background-color: maroon;*/
+      /*  color: white;*/
+      /*  font-family: 'Open Sans', sans-serif;*/
+      /*}*/
+      
+      paper-button {
+        background: maroon;
+        color: white;
+      }
+      
+      --paper-button-disabled {
+        background: black;
+      }
+      
+      .button-set {
+        margin: auto;
+        width: 100%;
+      }
+    </style>
+    <h1 class="title" align="center">sudoku</h1>
+    <h1 class="subtitle" align="center">Fresh and random Sudoku puzzles made every click.</h1>
+    <h3 class="count" align="center"># {{count}}</h3>
+    <br>
+    <div class="container">
+      <sudoku-table id="sudokuElement" board="[[board]]" loading="{{loading}}" count="{{count}}">
+      
+      </sudoku-table>
+      <br>
+      <paper-button hidden$="{{loading}}" on-tap="randomize" id="random" class="button" disabled$="{{loading}}" raised="">Random</paper-button>
+      <paper-button hidden$="{{loading}}" on-tap="check" id="check" class="button" raised="">Check</paper-button>
+    </div>
+    <paper-toast id="errorToast">Oops, the puzzle isn't finished.</paper-toast>
+    <paper-toast id="successToast">Congratulations!</paper-toast>
+  </template>
+  <script type="text/javascript" src="../js/main.js"></script>
+  <script>
+    Polymer({
+
+      is: 'sudoku-app',
+
+      properties: {
+        prop1: {
+          type: String,
+          value: 'sudoku-app',
+        },
+        
+        board: {
+          type: Array,
+          notify: true,
+        },
+        
+        loading: {
+          type: Boolean,
+          value: true,
+        },
+        
+        total: {
+          type: Number,
+          value: 0,
+        },
+        
+        count: {
+          type: Number,
+          value: null,
+          notify: true,
+        }
+        
+        
+      },
+      
+      ready: function() {
+        // firebase.database().ref('/sudoku/count').transaction(function(val) {
+        //   if (val == 0) {
+        //     return null;
+        //   } else return val + 1;
+        // });
+      },
+      
+      randomize: function() {
+        this.loading = !this.loading;
+        this.$.sudokuElement.updating = !this.$.sudokuElement.updating;
+        // this.$.sudokuElement.loading = !this.$.sudokuElement.loading;
+        let w = new Worker("/src/js/worker.js");
+        w.postMessage([9,false,false,20]);
+        w.onmessage = function(e) {
+          this.board = e.data;
+          this.$.sudokuElement.updateValues(this.board);  
+          this.$.random.disabled = false;
+          this.loading = !this.loading;
+          this.$.sudokuElement.updating = !this.$.sudokuElement.updating;
+          this.count++;
+        }.bind(this);
+      },
+      
+      check: function() {
+        //Load the current table to to a 2d array
+        if (this.$.sudokuElement.check(9, false, false)) {
+          this.$.successToast.open();
+          this.randomize();
+        } else this.$.errorToast.open();
+      }
+
+    });
+  </script>
+</dom-module>
+</body></html>
