@@ -63,12 +63,12 @@
     <h1 class="subtitle" align="center">Fresh and random Sudoku puzzles made every click.</h6>
     <br>
     <div class="container">
-      <sudoku-table id="sudokuElement" board="[[board]]">
+      <sudoku-table id="sudokuElement" board="[[board]]" loading="{{loading}}">
       
       </sudoku-table>
       <br>
-      <paper-button on-tap="randomize" id="random" class="button" disabled$={{loading}} raised>Random</paper-button>
-      <paper-button on-tap="check" id="check" class ="button" raised>Check</paper-button>
+      <paper-button hidden$="{{loading}}" on-tap="randomize" id="random" class="button" disabled$={{loading}} raised>Random</paper-button>
+      <paper-button hidden$="{{loading}}" on-tap="check" id="check" class ="button" raised>Check</paper-button>
     </div>
     <paper-toast id="errorToast">Oops, there was an error.</paper-toast>
     <paper-toast id="successToast">Congratulations!</paper-toast>
@@ -92,8 +92,16 @@
         
         loading: {
           type: Boolean,
-          value: false,
+          value: true,
+        },
+        
+        tableload: {
+          type: Boolean,
+          value: true,
+          notify: true,
         }
+        
+        
       },
       
       ready: function() {

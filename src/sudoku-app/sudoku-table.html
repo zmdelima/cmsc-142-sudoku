@@ -48,13 +48,18 @@
                
                loading: {
                    type: Boolean,
-                   value: true,
+                   notify: true,
                },
                
                updating: {
                    type: Boolean,
                    value: true,
                },
+               
+               tableload: {
+                   type: Boolean,
+                   notify: true,
+               }
            },
            
            ready: function() {
@@ -110,6 +115,7 @@
                       }
                       this.$.sudokuTable.appendChild(tr);
                       this.loading = !this.loading;
+                      this.tableload = !this.tableload;
                   }
               }.bind(this);
             //   this.board = generatePuzzle(generateBoard(9, false,false), 40);
@@ -164,6 +170,7 @@
                        board[i][j] = curr;
                    }
                }
+               
                return (error ? false : true);
            }
         });
