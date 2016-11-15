@@ -1,5 +1,5 @@
 "use strict";
-let original_board = [
+var original_board = [
     [0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0],
@@ -11,7 +11,7 @@ let original_board = [
     [0,0,0,0,0,0,0,0,0],
 ];
 
-let four = [
+var four = [
         [0,0,0,0],
         [0,0,0,0],
         [0,0,0,0],
@@ -19,35 +19,37 @@ let four = [
     ];
 
 var checkBox = function (board,row,col,val)  {
-    let N = board.length;
-    let boxMax = Math.sqrt(N);
-    let boxRow = Math.floor(row/Math.sqrt(N)) * boxMax;
-    let boxCol = Math.floor(col/Math.sqrt(N)) * boxMax;
-    for (let i=boxRow;i<(boxRow+boxMax);i++) for (let j=boxCol;j<(boxCol+boxMax);j++) if (val == board[i][j]) return false;        
+    var N = board.length;
+    var boxMax = Math.sqrt(N);
+    var boxRow = Math.floor(row/Math.sqrt(N)) * boxMax;
+    var boxCol = Math.floor(col/Math.sqrt(N)) * boxMax;
+    for (var i=boxRow;i<(boxRow+boxMax);i++) for (var j=boxCol;j<(boxCol+boxMax);j++) if (val == board[i][j]) return false;        
     return true;
 }
 
 var checkRow = function(board,row,val) {
-    let N = board.length;
-    for (let i=0; i<N; i++) if (board[row][i] == val) return false;
+    var N = board.length;
+    for (var i=0; i<N; i++) if (board[row][i] == val) return false;
     return true;
 }
 
 var checkCol = function(board,col,val) {
-    let N = board.length;
-    for (let i=0;i<N;i++) if (board[i][col] == val) return false;
+    var N = board.length;
+    for (var i=0;i<N;i++) if (board[i][col] == val) return false;
     return true;
 }
 
-var checkY = function(board,row,col,val) {
+ var checkY = function(board,row,col,val) {
     let N = board.length;
-    let mid = Math.floor(N/2);
+    let mid = Math.floor((N-1)/2);
+    if(row < mid && (row != col || row != N-1-col)) return true;
+    if(row >= mid && col != mid) return true;
     for (let i=mid;i<N;i++) if (board[i][mid] == val) return false;
     if (col <= mid) {
         for (let i=0;i<(mid+1);i++) if (board[i][i] == val) return false; 
     }
     if (col >= mid){
-        for (let i=mid;i<N;i++) if (board[i][N-1-i] == val) return false;
+        for (let i=0;i<(mid+1);i++) if (board[i][N-1-i] == val) return false;
     }
     return true;
 }
@@ -55,6 +57,7 @@ var checkY = function(board,row,col,val) {
 var checkX = function (board,row,col,val) {
     let N = board.length;
     let mid = Math.floor(N/2);
+    if (row != col || col+row != N-1) return true;
     if (row <= mid && row == col) {
         for (let i=0;i<N;i++) if (board[i][i] == val) return false; 
     }
@@ -65,16 +68,16 @@ var checkX = function (board,row,col,val) {
 }
 
 var checker = function(board,row,col,val,chkX,chkY){
-    let xChk = checkX(board,row,col,val);
-    let yChk = checkY(board,row,col,val);
-    let chk = checkRow(board,row,val) && checkCol(board,col,val) && checkBox(board,row,col,val);
+    var xChk = checkX(board,row,col,val);
+    var yChk = checkY(board,row,col,val);
+    var chk = checkRow(board,row,val) && checkCol(board,col,val) && checkBox(board,row,col,val);
     if (chkX) chk = chk && xChk;
     if (chkY) chk = chk && yChk;
     return chk;
 }
 
-let viewBoard = function(board) {
-    for(let i=0; i<board.length; i++) {
+var viewBoard = function(board) {
+    for(var i=0; i<board.length; i++) {
         // console.log(board[i]);
     }
 }
@@ -84,9 +87,9 @@ function getRandomInt(min, max) {
 }
 
 function generateRange(dim) {
-    let x = new Array(dim);
-    let current;
-    for (let i=0; i<dim; i++) {
+    var x = new Array(dim);
+    var current;
+    for (var i=0; i<dim; i++) {
         do {
             current = getRandomInt(1, dim+1);
             
@@ -98,15 +101,18 @@ function generateRange(dim) {
     return x;
 }
 
-let generateBoard = function(dim, chkX, chkY) {
+var generateBoard = function(dim, chkX, chkY) {
+    
     if (Math.sqrt(dim) % 1 != 0) {
         // console.log("Entered dimension is not a perfect square.");
         return;
     }
-    let board = new Array(dim);
+    var board = new Array(dim);
     for (var i=0; i<dim; i++) {
         board[i] = new Array(dim);
     }
+    
+    
     
     for (var i=0; i<dim; i++) {
         for (var j=0; j<dim; j++) {
@@ -114,15 +120,16 @@ let generateBoard = function(dim, chkX, chkY) {
         }
     }
     
-    let X = 0;
-    let Y = 0;
-    let selection = generateRange(dim);
+    
+    var X = 0;
+    var Y = 0;
+    var selection = generateRange(dim);
     
     //Generate random board
     while(true) {
         
         
-        for(let i=0; i<dim; i++) {
+        for(var i=0; i<dim; i++) {
             if(checker(board, X, Y, selection[i], chkX, chkY) && board.indexOf(selection[i]) == -1) {
                 if (board[X][Y] == 0) board[X][Y] = selection[i];
                 Y++;
@@ -170,13 +177,12 @@ let generateBoard = function(dim, chkX, chkY) {
         
         if (X == dim) break;
     }
-    
     return board;
 }
 
-let generatePuzzle = function (board, difficulty) {
-    for (let i=0; i<board.length; i++) {
-        for (let j=0; j<board.length; j++) {
+var generatePuzzle = function (board, difficulty) {
+    for (var i=0; i<board.length; i++) {
+        for (var j=0; j<board.length; j++) {
             if(getRandomInt(0, 100) < difficulty) {
                 board[i][j] = 0;
             }
@@ -189,7 +195,9 @@ let generatePuzzle = function (board, difficulty) {
 
 onmessage = function(e) {
     // console.log("received "+e.data[0]);
-    postMessage(generatePuzzle(generateBoard(e.data[0], e.data[1], e.data[2]), e.data[3]));
+    var temp = generateBoard(e.data[0], e.data[1], e.data[2]);
+    console.log(temp);
+    postMessage(temp);
 }
 
 // generatePuzzle(generateBoard(9, false,false), 20);
