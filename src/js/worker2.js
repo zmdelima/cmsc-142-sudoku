@@ -1,3 +1,4 @@
+"use strict";
 var checkBox = function (board,row,col,val)  {
     let N = board.length;
     let boxMax = Math.sqrt(N);
@@ -60,11 +61,11 @@ var solver = function(original_board,checkX,checkY){
         return arr.slice();
     });
     var count = 0;
-    var mode = true;
+    var mode = false;
     var x = 0;
     var y = 0;
     var startVal = 0;
-    let solutions = [];
+    var solutions = [];
     
     while(true){
         while (x < N) {
@@ -75,7 +76,7 @@ var solver = function(original_board,checkX,checkY){
                 if (mode) {
                     if (mode && x< 0) {
                         console.log("COUNT"+count);
-                        return;
+                        return solutions;
                     }
                     if (original_board[x][y] != 0 || original_board[x][y] == N) {
                         y--;
@@ -130,10 +131,13 @@ var solver = function(original_board,checkX,checkY){
         y=N-1;
         continue;
     }
-    return solutions;
+    
 }
 
 onmessage = function(e) {
     // console.log("received "+e.data[0]);
+    console.log("@solver");
+    console.log("board");
+    console.log(e.data);
     postMessage(solver(e.data[0], e.data[1], e.data[2]));
 }

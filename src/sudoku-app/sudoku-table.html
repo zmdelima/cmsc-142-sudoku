@@ -70,10 +70,10 @@
            
            ready: function() {
               let w = new Worker("/src/js/worker.js");
-              w.postMessage([9,false,false,20]);
+              w.postMessage([9,false,false,40]);
               
               w.onmessage = function(e) {
-                  this.board=e.data;
+                  this.board=generatePuzzle(e.data, 40);
                   N = this.board.length;
                   for (i=0; i<N; i++) {
                       let tr = document.createElement('tr');
@@ -144,6 +144,26 @@
                    }
                }
                
+               
+           },
+           
+           getBoard: function() {
+               let dim = this.$.sudokuTable.rows.length;
+               let board = new Array(dim);
+               for (let i=0; i<dim; i++) {
+                   board[i] = new Array(dim);
+               }
+               
+               for (let i=0; i<dim; i++) {
+                   for (let j=0; j<dim; j++) {
+                       board[i][j] = parseInt(this.$.sudokuTable.rows[i].cells[j].childNodes[0].value);
+                       if ( isNaN(board[i][j])) {
+                           board[i][j] = 0;
+                       }
+                   }
+               }
+               
+               return board;
                
            },
            
