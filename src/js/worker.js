@@ -39,27 +39,30 @@ var checkCol = function(board,col,val) {
     return true;
 }
 
-var checkY = function(board,row,col,val) {
-    var N = board.length;
-    var mid = Math.floor((N-1)/2);
-    for (var i=mid;i<N;i++) if (board[i][mid] == val) return false;
+ var checkY = function(board,row,col,val) {
+    let N = board.length;
+    let mid = Math.floor((N-1)/2);
+    if(row < mid && (row != col || row != N-1-col)) return true;
+    if(row >= mid && col != mid) return true;
+    for (let i=mid;i<N;i++) if (board[i][mid] == val) return false;
     if (col <= mid) {
-        for (var i=0;i<(mid+1);i++) if (board[i][i] == val) return false; 
+        for (let i=0;i<(mid+1);i++) if (board[i][i] == val) return false; 
     }
     if (col >= mid){
-        for (var i=0;i<(mid+1);i++) if (board[i][N-1-i] == val) return false;
+        for (let i=0;i<(mid+1);i++) if (board[i][N-1-i] == val) return false;
     }
     return true;
 }
 
 var checkX = function (board,row,col,val) {
-    var N = board.length;
-    var mid = Math.floor(N/2);
+    let N = board.length;
+    let mid = Math.floor(N/2);
+    if (row != col || col+row != N-1) return true;
     if (row <= mid && row == col) {
-        for (var i=0;i<N;i++) if (board[i][i] == val) return false; 
+        for (let i=0;i<N;i++) if (board[i][i] == val) return false; 
     }
     if (row >= mid && row == N-1-col){
-        for (var i=0;i<N;i++) if (board[i][N-1-i] == val) return false;
+        for (let i=0;i<N;i++) if (board[i][N-1-i] == val) return false;
     }
     return true;
 }

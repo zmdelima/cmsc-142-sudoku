@@ -70,7 +70,7 @@
            
            ready: function() {
               let w = new Worker("/src/js/worker.js");
-              w.postMessage([9,false,false,40]);
+              w.postMessage([9,false,false,20]);
               
               w.onmessage = function(e) {
                   this.board=generatePuzzle(e.data, 40);

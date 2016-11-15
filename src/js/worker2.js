@@ -23,6 +23,8 @@ var checkCol = function(board,col,val) {
 var checkY = function(board,row,col,val) {
     let N = board.length;
     let mid = Math.floor((N-1)/2);
+    if(row < mid && (row != col || row != N-1-col)) return true;
+    if(row >= mid && col != mid) return true;
     for (let i=mid;i<N;i++) if (board[i][mid] == val) return false;
     if (col <= mid) {
         for (let i=0;i<(mid+1);i++) if (board[i][i] == val) return false; 
@@ -36,6 +38,7 @@ var checkY = function(board,row,col,val) {
 var checkX = function (board,row,col,val) {
     let N = board.length;
     let mid = Math.floor(N/2);
+    if (row != col || col+row != N-1) return true;
     if (row <= mid && row == col) {
         for (let i=0;i<N;i++) if (board[i][i] == val) return false; 
     }
