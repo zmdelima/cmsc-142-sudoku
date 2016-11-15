@@ -27,13 +27,13 @@ var checkCol = function(board,col,val) {
 
 var checkY = function(board,row,col,val) {
     let N = board.length;
-    let mid = Math.floor(N/2);
+    let mid = Math.floor( (N-1) /2);
     for (let i=mid;i<N;i++) if (board[i][mid] == val) return false;
     if (col <= mid) {
         for (let i=0;i<(mid+1);i++) if (board[i][i] == val) return false; 
     }
     if (col >= mid){
-        for (let i=mid;i<N;i++) if (board[i][N-1-i] == val) return false;
+        for (let i=0;i<(mid+1);i++) if (board[i][N-1-i] == val) return false;
     }
     return true;
 }
