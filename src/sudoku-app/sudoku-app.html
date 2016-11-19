@@ -88,10 +88,10 @@
       
       </sudoku-table>
       <br>
-      <select name="select">
-        <option value="value1" selected>Value 1</option> 
-        <option value="value2">Value 2</option>
-        <option value="value3">Value 3</option>
+      <select hidden$="{{loading}}" on-change="setDiff" value$="{{difficulty}}" id="difficulty" disabled$={{loading}}>
+        <option value="20" selected>Easy</option> 
+        <option value="40">Medium</option>
+        <option value="60">Hard</option>
       </select>
       <paper-button hidden$="{{loading}}" on-tap="randomize" id="random" class="button" disabled$={{loading}} raised>Random</paper-button>
       <paper-button hidden$="{{loading}}" on-tap="check" id="check" class ="button" raised>Check</paper-button>
@@ -189,6 +189,11 @@
         } else this.$.errorToast.open();
       },
       
+      setDiff: function(){
+         this.difficulty = this.$.difficulty.value;
+         console.log(this.difficulty);
+      },
+
       solve: function() {
         // console.log("solve function");
         let solver = new Worker("/src/js/worker2.js");
