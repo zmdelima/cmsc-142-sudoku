@@ -1,4 +1,16 @@
 "use strict";
+var magic_board = [
+    [1,0,0,0,2,0,0,0,4],
+    [0,2,0,0,0,8,0,1,0],
+    [0,0,3,0,4,0,2,0,0],
+    [0,0,0,4,0,3,0,0,0],
+    [0,1,0,0,5,0,0,4,0],
+    [0,0,0,7,6,9,0,0,0],
+    [0,0,6,0,7,0,8,0,0],
+    [0,9,0,0,8,0,0,7,0],
+    [8,0,7,0,9,0,0,0,6]
+];
+
 var checkBox = function (board,row,col,val)  {
     let N = board.length;
     let boxMax = Math.sqrt(N);
@@ -57,8 +69,13 @@ var checker = function(board,row,col,val,chkX,chkY){
     return chk;
 }
 
+var magic_solver = function(checkX,checkY){
+    return solver(magic_board, checkX, checkY);
+}
+
 var solver = function(original_board,checkX,checkY){
-    console.log(original_board);
+    // console.log(original_board);
+    
     let N = original_board.length;
     var board = original_board.map(function(arr) {
         return arr.slice();
@@ -78,7 +95,8 @@ var solver = function(original_board,checkX,checkY){
                 //mode == true then backtracking
                 if (mode) {
                     if (mode && x< 0) {
-                        console.log("COUNT"+count);
+                        // console.log("COUNT"+count);
+                        // console.log(solutions[0]);
                         return solutions;
                     }
                     if (original_board[x][y] != 0 || original_board[x][y] == N) {
@@ -137,10 +155,15 @@ var solver = function(original_board,checkX,checkY){
     
 }
 
+var oneSolution = function(solutions){
+    console.log(solutions[Math.floor(Math.random() * solutions.length)]);
+}
+
 onmessage = function(e) {
     // console.log("received "+e.data[0]);
     console.log("@solver");
     console.log("board");
-    console.log(e.data);
+    // console.log(e.data);
+    // console.log(oneSolution(solver(e.data[0], e.data[1], e.data[2])));
     postMessage(solver(e.data[0], e.data[1], e.data[2]));
 }
