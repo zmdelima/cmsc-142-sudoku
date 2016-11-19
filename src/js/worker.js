@@ -119,16 +119,6 @@ var generateBoard = function(dim, chkX, chkY) {
         return;
     }
 
-    // var board = new Array(dim);
-    // for (var i=0; i<dim; i++) {
-    //     board[i] = new Array(dim);
-    // }
-    
-    // for (var i=0; i<dim; i++) {
-    //     for (var j=0; j<dim; j++) {
-    //         board[i][j] = 0;
-    //     }
-    // }
 
     var board = magic_board;
     // viewBoard(board);
@@ -140,7 +130,7 @@ var generateBoard = function(dim, chkX, chkY) {
     if(dim == 4){
         var solutiN = solver(four,chkX,chkY);
         board = oneSolution( solutiN );
-        console.log(board);
+        console.log(boardxx);
     }else 
     if( (!chkX && !chkY) ){
         var board = new Array(dim);
