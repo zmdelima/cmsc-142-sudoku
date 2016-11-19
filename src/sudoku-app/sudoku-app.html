@@ -132,6 +132,16 @@
           type: Array,
           value: [],
           notify: true,
+        },
+
+        chkX: {
+          type: Boolean,
+          value: false,
+        },
+
+        chkY: {
+          type: Boolean,
+          value: false,
         }
         
       },
@@ -146,7 +156,7 @@
         this.$.sudokuElement.updating = !this.$.sudokuElement.updating;
         // this.$.sudokuElement.loading = !this.$.sudokuElement.loading;
         let w = new Worker("/src/js/worker.js");
-        w.postMessage([9,false,false,20]);
+        w.postMessage([9, chkX, chkY, 20]);
         w.onmessage = function(e) {
           this.board = e.data;
           this.$.sudokuElement.updateValues(this.board);  
@@ -159,7 +169,7 @@
       
       check: function() {
         //Load the current table to to a 2d array
-        if (this.$.sudokuElement.check(9, false, false)) {
+        if (this.$.sudokuElement.check(9, chkX, chkY)) {
           this.$.successToast.open();
           this.randomize();
         } else this.$.errorToast.open();
