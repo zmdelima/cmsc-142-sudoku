@@ -142,13 +142,23 @@
         chkY: {
           type: Boolean,
           value: false,
+        },
+
+        dim: {
+          type: Number,
+          value: 9,
+        },
+
+        difficulty: {
+          type: Number,
+          value 20,
         }
         
       },
       
       ready: function() {
-        console.log("READY");
-        console.log("BOARD");
+        // console.log("READY");
+        // console.log("BOARD");
       },
       
       randomize: function() {
@@ -156,7 +166,7 @@
         this.$.sudokuElement.updating = !this.$.sudokuElement.updating;
         // this.$.sudokuElement.loading = !this.$.sudokuElement.loading;
         let w = new Worker("/src/js/worker.js");
-        w.postMessage([9, chkX, chkY, 20]);
+        w.postMessage([dim, chkX, chkY, difficulty]);
         w.onmessage = function(e) {
           this.board = e.data;
           this.$.sudokuElement.updateValues(this.board);  
@@ -169,20 +179,20 @@
       
       check: function() {
         //Load the current table to to a 2d array
-        if (this.$.sudokuElement.check(9, chkX, chkY)) {
+        if (this.$.sudokuElement.check(dim, chkX, chkY)) {
           this.$.successToast.open();
           this.randomize();
         } else this.$.errorToast.open();
       },
       
       solve: function() {
-        console.log("solve function");
+        // console.log("solve function");
         let solver = new Worker("/src/js/worker2.js");
-        console.log(this.$.sudokuElement.getBoard());
-        solver.postMessage([this.$.sudokuElement.getBoard(), false, false]);
+        // console.log(this.$.sudokuElement.getBoard());
+        solver.postMessage([this.$.sudokuElement.getBoard(), chkX, chkY]);
         solver.onmessage = function(e) {
-          console.log(e.data);
-          console.log(e.data[0]);
+          // console.log(e.data);
+          // console.log(e.data[0]);
           var sampleBoard = e.data[0];
         }
         // this.loading = !this.loading;
