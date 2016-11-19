@@ -74,7 +74,7 @@
 
                dimension: {
                    type: Number,
-                   value: 4,
+                   value: 9,
                },
 
                difficulty: {
@@ -106,7 +106,6 @@
             while (this.$.sudokuTable.hasChildNodes()) {
                 this.$.sudokuTable.removeChild(this.$.sudokuTable.lastChild);
             }
-            console.log(board);
             let N = board.length;
             for (i=0; i<N; i++) {
               let tr = document.createElement('tr');

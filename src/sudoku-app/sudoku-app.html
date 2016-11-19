@@ -301,9 +301,8 @@
         w.postMessage([this.dimension, this.chkX, this.chkY, this.difficulty]);
 
         w.onmessage = function(e) {
-          // this.board = generatePuzzle(e.data, this.difficulty);
-          this.board = generatePuzzle(e.data, 0);
-          console.log(this.board);
+          this.board = generatePuzzle(e.data, this.difficulty);
+          // this.board = generatePuzzle(e.data, 0);
           if(this.prevDim != this.dimension){
             this.$.sudokuElement.reconstructBoard(this.board);  
           }else{

@@ -54,6 +54,7 @@ var checkCol = function(board,col,val) {
 var checkY = function(board,row,col,val) {
     let N = board.length;
     let mid = Math.floor((N-1)/2);
+    if(board.length % 2 == 0) return true;
     if(row < mid && (row != col && row != N-1-col)) return true;
     if(row >= mid && col != mid) return true;
     for (let i=mid;i<N;i++) if (board[i][mid] == val) return false;
@@ -84,7 +85,7 @@ var checker = function(board,row,col,val,chkX,chkY){
     let yChk = checkY(board,row,col,val);
     let chk = checkRow(board,row,val) && checkCol(board,col,val) && checkBox(board,row,col,val);
     if (chkX) chk = chk && xChk;
-    if (chkY) chk = chk && yChk;
+    if (chkY && (board.length%2 == 1) ) chk = chk && yChk;
     return chk;
 }
 
@@ -108,95 +109,21 @@ function generateRange(dim) {
         
         x[i] = current;
     }
-    
     return x;
 }
 
 var generateBoard = function(dim, chkX, chkY) {
-    
     if (Math.sqrt(dim) % 1 != 0) {
-        // console.log("Entered dimension is not a perfect square.");
         return;
     }
 
-
     var board = magic_board;
-    // viewBoard(board);
-    
-    var X = 0;
-    var Y = 0;
-    var selection = generateRange(dim);
     
     if(dim == 4){
-        var solutiN = solver(four,chkX,chkY);
+        var solutiN = solver(four,chkX,false);
         board = oneSolution( solutiN );
-        console.log(boardxx);
-    }else 
-    if( (!chkX && !chkY) ){
-        var board = new Array(dim);
-        for (var i=0; i<dim; i++) {
-            board[i] = new Array(dim);
-        }
-        
-        for (var i=0; i<dim; i++) {
-            for (var j=0; j<dim; j++) {
-                board[i][j] = 0;
-            }
-        }
-        
-        //Generate random board
-        while(true) {
-            for(var i=0; i<dim; i++) {
-                if(checker(board, X, Y, selection[i], chkX, chkY) && board.indexOf(selection[i]) == -1) {
-                    if (board[X][Y] == 0) board[X][Y] = selection[i];
-                    Y++;
-                    break;
-                }
-                //If the iteration reaches the end but no eligible number can be placed
-                //Backtrack
-                if (i == dim-1) {
-                    do {
-                        if (Y != 0) {
-                            Y--;
-                        } else {
-                            X--;
-                            Y = dim-1;
-                            if (X < 0) {
-                                X = 0;
-                                Y = 0;
-                                selection = generateRange(dim);
-                                break;
-                            }
-                        }
-                        //Reset i to the index of the previous position's current value
-                        // console.log("Currently at position "+X+","+Y);
-                        // console.log(selection);
-                        // console.log(selection.indexOf(board[X][Y]))
-                        i = selection.indexOf(board[X][Y]);
-                        board[X][Y]=0;
-                    } while(i == selection.length-1);    
-                }
-            }
-            
-            // viewBoard(board);
-            // console.log("----");
-            
-            if (Y == dim) {
-                X++;
-                Y=0;
-            }
-            
-            if (X == dim){
-                break;
-            }
-        }
-    }else{
-        // var solutiN = solver(magic_board,false,false);
-        // var solutiN = solver(magic_board,true,false);
-        // var solutiN = solver(magic_board,false,true);
-        // var solutiN = solver(magic_board,true,true);
-        var solutiN = solver(magic_board,chkX,checkY);
-        
+    }else {
+        var solutiN = solver(magic_board,chkX,chkY);
         board = oneSolution( solutiN );
     }
    
@@ -204,8 +131,6 @@ var generateBoard = function(dim, chkX, chkY) {
 }
 
 var solver = function(original_board,checkX,checkY){
-    // console.log(original_board);
-    console.log(checkY);
     let N = original_board.length;
     var board = original_board.map(function(arr) {
         return arr.slice();
@@ -264,7 +189,6 @@ var solver = function(original_board,checkX,checkY){
                     }
                     continue;
                 }
-                
                 y++;
             }
             y=0;
@@ -286,7 +210,6 @@ var solver = function(original_board,checkX,checkY){
 
 
 var oneSolution = function(solutions){
-    // console.log(solutions[Math.floor(Math.random() * solutions.length)]);
     return solutions[Math.floor(Math.random() * solutions.length)];
 }
 
@@ -311,11 +234,3 @@ onmessage = function(e) {
     // postMessage( generatePuzzle(temp, e.data[3]) );
     postMessage(temp);
 }
-
-// generatePuzzle(generateBoard(9, false,false), 20);
-
-// generateBoard(9, false, false);
-
-// generateBoard(4);
-
-
