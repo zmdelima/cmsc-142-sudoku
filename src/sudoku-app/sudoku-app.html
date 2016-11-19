@@ -88,6 +88,11 @@
       
       </sudoku-table>
       <br>
+      <select name="select">
+        <option value="value1" selected>Value 1</option> 
+        <option value="value2">Value 2</option>
+        <option value="value3">Value 3</option>
+      </select>
       <paper-button hidden$="{{loading}}" on-tap="randomize" id="random" class="button" disabled$={{loading}} raised>Random</paper-button>
       <paper-button hidden$="{{loading}}" on-tap="check" id="check" class ="button" raised>Check</paper-button>
       <paper-button hidden$="{{loading}}" on-tap="solve" id="solve" class="button" disabled$={{loading}} raised>Solve</paper-button>
@@ -132,13 +137,32 @@
           type: Array,
           value: [],
           notify: true,
+        },
+
+        chkX: {
+          type: Boolean,
+          value: false,
+        },
+
+        chkY: {
+          type: Boolean,
+          value: false,
+        },
+
+        dimension: {
+          type: Number,
+          value: 9,
+        },
+
+        difficulty: {
+          type: Number,
+          value: 20,
         }
         
       },
       
       ready: function() {
-        console.log("READY");
-        console.log("BOARD");
+        // console.log("READY");
       },
       
       randomize: function() {
@@ -146,9 +170,9 @@
         this.$.sudokuElement.updating = !this.$.sudokuElement.updating;
         // this.$.sudokuElement.loading = !this.$.sudokuElement.loading;
         let w = new Worker("/src/js/worker.js");
-        w.postMessage([9,false,false,20]);
+        w.postMessage([this.dimension, this.chkX, this.chkY, this.difficulty]);
         w.onmessage = function(e) {
-          this.board = e.data;
+          this.board = generatePuzzle(e.data, this.difficulty);
           this.$.sudokuElement.updateValues(this.board);  
           this.$.random.disabled = false;
           this.loading = !this.loading;
@@ -159,21 +183,23 @@
       
       check: function() {
         //Load the current table to to a 2d array
-        if (this.$.sudokuElement.check(9, false, false)) {
+        if (this.$.sudokuElement.check(this.dimension, this.chkX, this.chkY)) {
           this.$.successToast.open();
           this.randomize();
         } else this.$.errorToast.open();
       },
       
       solve: function() {
-        console.log("solve function");
+        // console.log("solve function");
         let solver = new Worker("/src/js/worker2.js");
-        console.log(this.$.sudokuElement.getBoard());
-        solver.postMessage([this.$.sudokuElement.getBoard(), false, false]);
+        // console.log(this.$.sudokuElement.getBoard());
+        solver.postMessage([this.$.sudokuElement.getBoard(), this.chkX, this.chkY]);
         solver.onmessage = function(e) {
-          console.log(e.data);
-          console.log(e.data[0]);
+          // console.log(e.data);
+          console.log(e.data[Math.floor(Math.random() * e.data.length)]);
           var sampleBoard = e.data[0];
+          this.solutions = e.data;
+
         }
         // this.loading = !this.loading;
         // let s = new Worker("/src/js/worker2.js");
