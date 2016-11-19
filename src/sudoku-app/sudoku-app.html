@@ -88,6 +88,11 @@
       
       </sudoku-table>
       <br>
+      <select name="select">
+        <option value="value1" selected>Value 1</option> 
+        <option value="value2">Value 2</option>
+        <option value="value3">Value 3</option>
+      </select>
       <paper-button hidden$="{{loading}}" on-tap="randomize" id="random" class="button" disabled$={{loading}} raised>Random</paper-button>
       <paper-button hidden$="{{loading}}" on-tap="check" id="check" class ="button" raised>Check</paper-button>
       <paper-button hidden$="{{loading}}" on-tap="solve" id="solve" class="button" disabled$={{loading}} raised>Solve</paper-button>
@@ -158,7 +163,6 @@
       
       ready: function() {
         // console.log("READY");
-        // console.log("BOARD");
       },
       
       randomize: function() {
