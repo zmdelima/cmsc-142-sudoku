@@ -166,7 +166,7 @@
         this.$.sudokuElement.updating = !this.$.sudokuElement.updating;
         // this.$.sudokuElement.loading = !this.$.sudokuElement.loading;
         let w = new Worker("/src/js/worker.js");
-        w.postMessage([dimension, chkX, chkY, difficulty]);
+        w.postMessage([this.dimension, this.chkX, this.chkY, this.difficulty]);
         w.onmessage = function(e) {
           this.board = e.data;
           this.$.sudokuElement.updateValues(this.board);  
@@ -179,7 +179,7 @@
       
       check: function() {
         //Load the current table to to a 2d array
-        if (this.$.sudokuElement.check(dimension, chkX, chkY)) {
+        if (this.$.sudokuElement.check(this.dimension, this.chkX, this.chkY)) {
           this.$.successToast.open();
           this.randomize();
         } else this.$.errorToast.open();
@@ -189,7 +189,7 @@
         // console.log("solve function");
         let solver = new Worker("/src/js/worker2.js");
         // console.log(this.$.sudokuElement.getBoard());
-        solver.postMessage([this.$.sudokuElement.getBoard(), chkX, chkY]);
+        solver.postMessage([this.$.sudokuElement.getBoard(), this.chkX, this.chkY]);
         solver.onmessage = function(e) {
           // console.log(e.data);
           // console.log(e.data[0]);
