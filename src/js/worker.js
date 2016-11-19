@@ -27,7 +27,7 @@ var four = [
         [0,0,0,0],
         [0,0,0,0],
         [0,0,0,0],
-        [0,0,0,0],
+        [0,0,0,0]
     ];
 
 var checkBox = function (board,row,col,val)  {
@@ -137,7 +137,12 @@ var generateBoard = function(dim, chkX, chkY) {
     var Y = 0;
     var selection = generateRange(dim);
     
-    if( (!chkX && !chkY) || dim == 4 ){
+    if(dim == 4){
+        var solutiN = solver(four,chkX,chkY);
+        board = oneSolution( solutiN );
+        console.log(board);
+    }else 
+    if( (!chkX && !chkY) ){
         var board = new Array(dim);
         for (var i=0; i<dim; i++) {
             board[i] = new Array(dim);
@@ -210,7 +215,7 @@ var generateBoard = function(dim, chkX, chkY) {
 
 var solver = function(original_board,checkX,checkY){
     // console.log(original_board);
-    
+    console.log(checkY);
     let N = original_board.length;
     var board = original_board.map(function(arr) {
         return arr.slice();

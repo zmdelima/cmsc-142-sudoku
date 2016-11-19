@@ -68,18 +68,23 @@
                },
 
                chkY: {
-                type: Boolean,
-                value: false,
+                   type: Boolean,
+                   value: false,
                },
 
                dimension: {
-                type: Number,
-                value: 9,
+                   type: Number,
+                   value: 4,
                },
 
                difficulty: {
-                type: Number,
-                value: 60,
+                   type: Number,
+                   value: 60,
+               },
+
+               ndim: {
+                   type: Number,
+                   notify: true,
                }
            },
            
@@ -90,56 +95,67 @@
               w.onmessage = function(e) {
                   this.board = generatePuzzle(e.data, this.difficulty);
                   // this.board = generatePuzzle(e.data, 0);
-                  N = this.board.length;
-                  for (i=0; i<N; i++) {
-                      let tr = document.createElement('tr');
-                      for (j=0; j<N; j++) {
-                          let td = document.createElement('td');
-                          let input = document.createElement('input');
-                          if (this.board[i][j] != 0) {
-                            input.setAttribute('value', this.board[i][j]);
-                            input.setAttribute('readonly', 'readonly');
-                          }
-                          
-                          input.setAttribute('maxlength', 1);
-                          input.style.width = "100%";
-                          input.style.border = "solid 0 #fff";
-                          input.style.textAlign = "center";
-                          input.style.fontFamily = "'Open Sans', sans-serif";
-                          input.style.fontSize = "150%";
-                          input.style.padding = "0";
-                          
-                          if (this.board[i][j] == 0) {
-                              input.style.color = "blue";
-                          }
-                          
-                          td.style.border = "#DDDDEE solid 2px";
-                          
-                          if (i % Math.sqrt(N) == 0) {
-                              td.style.borderTop = "#b71c1c solid 3px";
-                          }
-                          
-                          if (i == N-1) {
-                              td.style.borderBottom = "#b71c1c solid 3px";
-                          }
-                          
-                          if (j % Math.sqrt(N) == 0) {
-                              td.style.borderLeft = "#b71c1c solid 3px";
-                          }
-                          
-                          if (j == N-1) {
-                              td.style.borderRight = "#b71c1c solid 3px";
-                          }
-                        
-                          td.appendChild(input);
-                          tr.appendChild(td);
-                      }
-                      this.$.sudokuTable.appendChild(tr);
-                      this.loading = !this.loading;
-                      this.tableload = !this.tableload;
-                  }
+                  this.reconstructBoard(this.board);
+                  this.loading = false;
+                  this.tableload = !this.tableload;
               }.bind(this);
            },
+
+           reconstructBoard: function(board){
+
+            while (this.$.sudokuTable.hasChildNodes()) {
+                this.$.sudokuTable.removeChild(this.$.sudokuTable.lastChild);
+            }
+            console.log(board);
+            let N = board.length;
+            for (i=0; i<N; i++) {
+              let tr = document.createElement('tr');
+              for (j=0; j<N; j++) {
+                  let td = document.createElement('td');
+                  let input = document.createElement('input');
+                  if (this.board[i][j] != 0) {
+                    input.setAttribute('value', this.board[i][j]);
+                    input.setAttribute('readonly', 'readonly');
+                  }
+                  
+                  input.setAttribute('maxlength', 1);
+                  input.style.width = "100%";
+                  input.style.border = "solid 0 #fff";
+                  input.style.textAlign = "center";
+                  input.style.fontFamily = "'Open Sans', sans-serif";
+                  input.style.fontSize = "150%";
+                  input.style.padding = "0";
+                  
+                  if (this.board[i][j] == 0) {
+                      input.style.color = "blue";
+                  }
+                  
+                  td.style.border = "#DDDDEE solid 2px";
+                  
+                  if (i % Math.sqrt(N) == 0) {
+                      td.style.borderTop = "#b71c1c solid 3px";
+                  }
+                  
+                  if (i == N-1) {
+                      td.style.borderBottom = "#b71c1c solid 3px";
+                  }
+                  
+                  if (j % Math.sqrt(N) == 0) {
+                      td.style.borderLeft = "#b71c1c solid 3px";
+                  }
+                  
+                  if (j == N-1) {
+                      td.style.borderRight = "#b71c1c solid 3px";
+                  }generatePuzzle
+                
+                  td.appendChild(input);
+                  tr.appendChild(td);
+              }
+              this.$.sudokuTable.appendChild(tr);
+              // this.loading = !this.loading;
+              // this.tableload = !this.tableload;
+            }
+          },
            
            updateValues: function(board) {
                let N = board.length; 

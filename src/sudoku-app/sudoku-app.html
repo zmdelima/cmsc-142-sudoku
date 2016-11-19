@@ -155,7 +155,7 @@
     <h3 class="count" align="center"># {{count}}</h3>
     <br>
     <div class="container">
-      <sudoku-table id="sudokuElement" board="[[board]]" loading="{{loading}}" count="{{count}}">
+      <sudoku-table id="sudokuElement" board="[[board]]" loading="{{loading}}" count="{{count}}" ndim="{{dimension}}">
       
       </sudoku-table>
       <br>
@@ -272,6 +272,11 @@
           value: 9,
         },
 
+        prevDim: {
+          type: Number,
+          value: 9,
+        },
+
         difficulty: {
           type: Number,
           value: 20,
@@ -294,16 +299,23 @@
         // this.$.sudokuElement.loading = !this.$.sudokuElement.loading;
         let w = new Worker("/src/js/worker.js");
         w.postMessage([this.dimension, this.chkX, this.chkY, this.difficulty]);
+
         w.onmessage = function(e) {
-          this.board = generatePuzzle(e.data, this.difficulty);
-          this.$.sudokuElement.updateValues(this.board);  
+          // this.board = generatePuzzle(e.data, this.difficulty);
+          this.board = generatePuzzle(e.data, 0);
+          console.log(this.board);
+          if(this.prevDim != this.dimension){
+            this.$.sudokuElement.reconstructBoard(this.board);  
+          }else{
+            this.$.sudokuElement.updateValues(this.board);  
+          }
+
           this.$.random.disabled = false;
           this.loading = !this.loading;
           this.$.sudokuElement.updating = !this.$.sudokuElement.updating;
           this.count++;
         }.bind(this);
 
-        // this.$.sudokuElement.remove();
       },
 
       parseFile: function(){
@@ -358,6 +370,7 @@
       },
 
       setDim: function(){
+         this.prevDim = this.dimension;
          this.dimension = this.$.dimension.value;
       },
 
