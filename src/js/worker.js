@@ -35,19 +35,33 @@ var checkBox = function (board,row,col,val)  {
     var boxMax = Math.sqrt(N);
     var boxRow = Math.floor(row/Math.sqrt(N)) * boxMax;
     var boxCol = Math.floor(col/Math.sqrt(N)) * boxMax;
-    for (var i=boxRow;i<(boxRow+boxMax);i++) for (var j=boxCol;j<(boxCol+boxMax);j++) if (val == board[i][j]) return false;        
+    for (var i=boxRow;i<(boxRow+boxMax);i++){
+        for (var j=boxCol;j<(boxCol+boxMax);j++){
+            if (val == board[i][j]){
+                return false;        
+            }
+        }
+    }
     return true;
 }
 
 var checkRow = function(board,row,val) {
     var N = board.length;
-    for (var i=0; i<N; i++) if (board[row][i] == val) return false;
+    for (var i=0; i<N; i++){
+        if (board[row][i] == val){
+            return false;
+        }
+    }
     return true;
 }
 
 var checkCol = function(board,col,val) {
     var N = board.length;
-    for (var i=0;i<N;i++) if (board[i][col] == val) return false;
+    for (var i=0;i<N;i++){
+        if (board[i][col] == val){
+            return false;
+        }
+    }
     return true;
 }
 
@@ -56,10 +70,18 @@ var checkY = function(board,row,col,val) {
     var mid = Math.floor((N-1)/2);
     for (var i=mid;i<N;i++) if (board[i][mid] == val) return false;
     if (col <= mid) {
-        for (var i=0;i<(mid+1);i++) if (board[i][i] == val) return false; 
+        for (var i=0;i<(mid+1);i++){
+            if (board[i][i] == val){
+                return false; 
+            }
+        }
     }
     if (col >= mid){
-        for (var i=0;i<(mid+1);i++) if (board[i][N-1-i] == val) return false;
+        for (var i=0;i<(mid+1);i++){
+            if (board[i][N-1-i] == val){
+                return false;
+            }
+        }
     }
     return true;
 }
@@ -68,20 +90,30 @@ var checkX = function (board,row,col,val) {
     var N = board.length;
     var mid = Math.floor(N/2);
     if (row <= mid && row == col) {
-        for (var i=0;i<N;i++) if (board[i][i] == val) return false; 
+        for (var i=0;i<N;i++){
+            if (board[i][i] == val){
+                return false; 
+            }
+        }
     }
     if (row >= mid && row == N-1-col){
-        for (var i=0;i<N;i++) if (board[i][N-1-i] == val) return false;
+        for (var i=0;i<N;i++){
+            if (board[i][N-1-i] == val){
+                return false;
+            }
+        }
     }
     return true;
 }
 
 var checker = function(board,row,col,val,chkX,chkY){
-    var xChk = checkX(board,row,col,val);
-    var yChk = checkY(board,row,col,val);
     var chk = checkRow(board,row,val) && checkCol(board,col,val) && checkBox(board,row,col,val);
-    if (chkX) chk = chk && xChk;
-    if (chkY) chk = chk && yChk;
+    if (chkX){
+        chk = chk && checkX(board,row,col,val);
+    }
+    if (chkY){
+        chk = chk && checkY(board,row,col,val);
+    }
     return chk;
 }
 
@@ -101,7 +133,6 @@ function generateRange(dim) {
     for (var i=0; i<dim; i++) {
         do {
             current = getRandomInt(1, dim+1);
-            
         } while (x.indexOf(current) != -1);
         
         x[i] = current;
@@ -116,12 +147,11 @@ var generateBoard = function(dim, chkX, chkY) {
         // console.log("Entered dimension is not a perfect square.");
         return;
     }
+
     var board = new Array(dim);
     for (var i=0; i<dim; i++) {
         board[i] = new Array(dim);
     }
-    
-    
     
     for (var i=0; i<dim; i++) {
         for (var j=0; j<dim; j++) {
@@ -129,15 +159,12 @@ var generateBoard = function(dim, chkX, chkY) {
         }
     }
     
-    
     var X = 0;
     var Y = 0;
     var selection = generateRange(dim);
     
     //Generate random board
     while(true) {
-        
-        
         for(var i=0; i<dim; i++) {
             if(checker(board, X, Y, selection[i], chkX, chkY) && board.indexOf(selection[i]) == -1) {
                 if (board[X][Y] == 0) board[X][Y] = selection[i];
@@ -159,7 +186,6 @@ var generateBoard = function(dim, chkX, chkY) {
                             selection = generateRange(dim);
                             break;
                         }
-                        
                     }
                     //Reset i to the index of the previous position's current value
                     // console.log("Currently at position "+X+","+Y);
@@ -169,22 +195,19 @@ var generateBoard = function(dim, chkX, chkY) {
                     board[X][Y]=0;
                 } while(i == selection.length-1);    
             }
-            
-            
         }
         
-        
-        viewBoard(board);
+        // viewBoard(board);
         // console.log("----");
-        
-        
         
         if (Y == dim) {
             X++;
             Y=0;
         }
         
-        if (X == dim) break;
+        if (X == dim){
+            break;
+        }
     }
     return board;
 }
@@ -198,15 +221,17 @@ var generatePuzzle = function (board, difficulty) {
         }
     }
     
-    viewBoard(board);
+    // viewBoard(board);
     return board;
 }
 
 onmessage = function(e) {
     // console.log("received "+e.data[0]);
     var temp = generateBoard(e.data[0], e.data[1], e.data[2]);
-    console.log(temp);
-    postMessage(temp);
+    // console.log(temp);
+    
+    postMessage( generatePuzzle(temp, e.data[3]) );
+    // postMessage(temp);
 }
 
 // generatePuzzle(generateBoard(9, false,false), 20);
