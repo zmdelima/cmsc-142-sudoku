@@ -24,11 +24,6 @@
             #spinner {
                 margin-top: 10px;
             }
-            
-            
-            
-            
-            
         </style>
         <table hidden$="{{!updating}}" id="sudokuTable">
         
@@ -65,15 +60,36 @@
                count: {
                    type: Number,
                    notify: true,
+               },
+
+               chkX: {
+                   type: Boolean,
+                   value: false,
+               },
+
+               chkY: {
+                type: Boolean,
+                value: false,
+               },
+
+               dimension: {
+                type: Number,
+                value: 9,
+               },
+
+               difficulty: {
+                type: Number,
+                value: 40,
                }
            },
            
            ready: function() {
               let w = new Worker("/src/js/worker.js");
-              w.postMessage([9,false,false,40]);
+              w.postMessage([this.dimension, this.chkX, this.chkY, this.difficulty]);
               
               w.onmessage = function(e) {
-                  this.board=generatePuzzle(e.data, 40);
+                  this.board = generatePuzzle(e.data, this.difficulty);
+                  // this.board = generatePuzzle(e.data, 0);
                   N = this.board.length;
                   for (i=0; i<N; i++) {
                       let tr = document.createElement('tr');
@@ -124,9 +140,6 @@
                       this.tableload = !this.tableload;
                   }
               }.bind(this);
-              
-                
-              
            },
            
            updateValues: function(board) {
@@ -143,13 +156,12 @@
                        }
                    }
                }
-               
-               
            },
            
            getBoard: function() {
                let dim = this.$.sudokuTable.rows.length;
                let board = new Array(dim);
+
                for (let i=0; i<dim; i++) {
                    board[i] = new Array(dim);
                }
@@ -163,8 +175,7 @@
                    }
                }
                
-               return board;
-               
+               return board;  
            },
            
            check: function(dim, chkX, chkY) {
@@ -196,7 +207,6 @@
                        board[i][j] = curr;
                    }
                }
-               
                return (error ? false : true);
            }
         });

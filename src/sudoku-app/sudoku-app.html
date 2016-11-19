@@ -168,7 +168,7 @@
         let w = new Worker("/src/js/worker.js");
         w.postMessage([this.dimension, this.chkX, this.chkY, this.difficulty]);
         w.onmessage = function(e) {
-          this.board = e.data;
+          this.board = generatePuzzle(e.data, this.difficulty);
           this.$.sudokuElement.updateValues(this.board);  
           this.$.random.disabled = false;
           this.loading = !this.loading;
@@ -192,8 +192,10 @@
         solver.postMessage([this.$.sudokuElement.getBoard(), this.chkX, this.chkY]);
         solver.onmessage = function(e) {
           // console.log(e.data);
-          // console.log(e.data[0]);
+          console.log(e.data[Math.floor(Math.random() * e.data.length)]);
           var sampleBoard = e.data[0];
+          this.solutions = e.data;
+
         }
         // this.loading = !this.loading;
         // let s = new Worker("/src/js/worker2.js");
