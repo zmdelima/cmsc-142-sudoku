@@ -137,7 +137,7 @@ var generateBoard = function(dim, chkX, chkY) {
     var Y = 0;
     var selection = generateRange(dim);
     
-    /*if(!chkX && !chkY){
+    if(!chkX && !chkY){
         var board = new Array(dim);
         for (var i=0; i<dim; i++) {
             board[i] = new Array(dim);
@@ -195,17 +195,16 @@ var generateBoard = function(dim, chkX, chkY) {
                 break;
             }
         }
-    }*/
+    }else{
+        // var solutiN = solver(magic_board,false,false);
+        // var solutiN = solver(magic_board,true,false);
+        // var solutiN = solver(magic_board,false,true);
+        // var solutiN = solver(magic_board,true,true);
+        var solutiN = solver(magic_board,chkX,checkY);
+        
+        board = oneSolution( solutiN );
+    }
    
-    // var solutiN = solver(magic_board,false,false);
-    var solutiN = solver(magic_board,true,false);
-    // var solutiN = solver(magic_board,false,true);
-    // var solutiN = solver(magic_board,true,true);
-    
-    // var solutiN = solver(magic_board,chkX,checkY);
-    
-    board = oneSolution( solutiN );
-
     return board;
 }
 
