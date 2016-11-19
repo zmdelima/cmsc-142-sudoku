@@ -137,7 +137,7 @@ var generateBoard = function(dim, chkX, chkY) {
     var Y = 0;
     var selection = generateRange(dim);
     
-    if(!chkX && !chkY){
+    if( (!chkX && !chkY) || dim == 4 ){
         var board = new Array(dim);
         for (var i=0; i<dim; i++) {
             board[i] = new Array(dim);

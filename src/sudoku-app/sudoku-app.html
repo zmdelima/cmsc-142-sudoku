@@ -58,7 +58,15 @@
         --paper-toast-color: white;
       }
       
-      
+      select {
+         border: 0;
+         font-size: 20px;
+         font-weight: bold;
+         padding: 2px 10px;
+         width: 100px;
+         *width: 100px;
+         *background: #58B14C;
+      }
       /*.button {*/
       /*  background-color: maroon;*/
       /*  color: white;*/
@@ -76,7 +84,7 @@
       
       .button-set {
         margin: auto;
-        width: 100%;
+        width: 100%;7
       }
     </style>
     <h1 class="title" align="center">sudoku</h1>
@@ -88,11 +96,17 @@
       
       </sudoku-table>
       <br>
+      <select hidden$="{{loading}}" on-change="setDim" value$="{{dimension}}" id="dimension" disabled$={{loading}}>
+        <option value="4" >4 x 4</option> 
+        <option value="9" selected>9 x 9</option>
+      </select>
       <select hidden$="{{loading}}" on-change="setDiff" value$="{{difficulty}}" id="difficulty" disabled$={{loading}}>
         <option value="20" selected>Easy</option> 
         <option value="40">Medium</option>
         <option value="60">Hard</option>
       </select>
+      <label><input type="checkbox" id="chkX" on-tap="toggleX">Check X</label>
+      <label><input type="checkbox" id="chkY" on-tap="toggleY">Check Y</label>
       <paper-button hidden$="{{loading}}" on-tap="randomize" id="random" class="button" disabled$={{loading}} raised>Random</paper-button>
       <paper-button hidden$="{{loading}}" on-tap="check" id="check" class ="button" raised>Check</paper-button>
       <paper-button hidden$="{{loading}}" on-tap="solve" id="solve" class="button" disabled$={{loading}} raised>Solve</paper-button>
@@ -188,10 +202,21 @@
           this.randomize();
         } else this.$.errorToast.open();
       },
+
+      toggleX: function(){
+         this.chkX = this.$.chkX.checked;
+      },
+
+      toggleY: function(){
+         this.chkY = this.$.chkY.checked;
+      },
       
       setDiff: function(){
          this.difficulty = this.$.difficulty.value;
-         console.log(this.difficulty);
+      },
+
+      setDim: function(){
+         this.dimension = this.$.dimension.value;
       },
 
       solve: function() {
