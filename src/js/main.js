@@ -5,18 +5,6 @@ let startWorker = function() {
 }
 
 
-// var setDiff = function (val){
-//     if(val == 20){
-//         console.log(val);
-//     }
-//     if(val == 30){
-//         console.log(val);
-//     }
-//     if(val == 40){
-//         console.log(val);
-//     }
-// }
-
 var checkBox = function (board,row,col,val)  {
     let N = board.length;
     let boxMax = Math.sqrt(N);
