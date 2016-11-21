@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="../../bower_components/mercury-paginator/mercury-paginator.html">
 
 </head><body><dom-module id="sudoku-app">
   <template>
@@ -50,7 +51,61 @@
         --paper-toast-color: white;
       }
       
+      select {
+         border: 0;
+         font-size: 20px;
+         font-weight: bold;
+         padding: 2px 10px;
+         width: 100px;
+         *width: 100px;
+         *background: #58B14C;
+      }
+
+      .inputfile {
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        position: absolute;
+        z-index: -1;
+      }
       
+      .inputfile + label {
+        font-size: 1.25em;
+        font-weight: 700;
+        color: white;
+        background-color: black;
+        display: inline-block;
+      }
+
+      .inputfile:focus + label,
+      .inputfile + label:hover {
+          background-color: #722040;
+      }
+
+      .inputfile + label {
+        color: #f1e5e6;
+        background-color: maroon;
+        cursor: pointer; /* "hand" cursor */
+         
+        max-width: 80%;
+        font-size: 1.25rem;
+        /* 20px */
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
+        display: inline-block;
+        /*overflow: hidden;*/
+        padding: 0.625rem 1.25rem;
+        /* 10px 20px */
+      }
+
+      .inputfile:focus + label {
+        outline: 1px dotted #000;
+        outline: -webkit-focus-ring-color auto 5px;
+      }
+
       /*.button {*/
       /*  background-color: maroon;*/
       /*  color: white;*/
@@ -70,18 +125,75 @@
         margin: auto;
         width: 100%;
       }
+
+      #byteContent {
+        margin: 5px 0;
+        max-height: 100px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        visibility: hidden;
+      }
+      
+      #viewAll {
+        border: 0px;
+        height: 47px;
+        width: 150px;
+        color: #f1e5e6;
+        font-size: 1.25rem;
+        background-color: maroon;
+      }
     </style>
     <h1 class="title" align="center">sudoku</h1>
     <h1 class="subtitle" align="center">Fresh and random Sudoku puzzles made every click.</h1>
     <h3 class="count" align="center"># {{count}}</h3>
     <br>
     <div class="container">
-      <sudoku-table id="sudokuElement" board="[[board]]" loading="{{loading}}" count="{{count}}">
+      <sudoku-table hidden$="{{solutionState}}" id="sudokuElement" board="[[board]]" loading="{{loading}}" count="{{count}}" ndim="{{dimension}}">
       
       </sudoku-table>
+      
+      <template is="dom-repeat" items="{{solution}}">
+        <sudoku-table hidden$="{{!solutionState}}" board="{{item}}"></sudoku-table>
+        <br>
+      </template>
+      
+      
+      <br>
+      <select hidden$="{{loading}}" on-change="setDim" value$="{{dimension}}" id="dimension" disabled$="{{loading}}">
+        <option value="4">4 x 4</option> 
+        <option value="9" selected="">9 x 9</option>
+      </select>
+      <select hidden$="{{loading}}" on-change="setDiff" value$="{{difficulty}}" id="difficulty" disabled$="{{loading}}">
+        <option value="20" selected="">Easy</option> 
+        <option value="40">Medium</option>
+        <option value="60">Hard</option>
+      </select>
+      <label><input type="checkbox" id="chkX" on-tap="toggleX">Check X</label>
+      <label><input type="checkbox" id="chkY" on-tap="toggleY">Check Y</label>
+      <br>
       <br>
       <paper-button hidden$="{{loading}}" on-tap="randomize" id="random" class="button" disabled$="{{loading}}" raised="">Random</paper-button>
       <paper-button hidden$="{{loading}}" on-tap="check" id="check" class="button" raised="">Check</paper-button>
+      <paper-button hidden$="{{loading}}" on-tap="solve" id="solve" class="button" disabled$="{{loading}}" raised="">Solve</paper-button>
+      <br>
+      <br>
+      
+      
+      <input type="file" name="file-1[]" id="files" class="inputfile inputfile-1" data-multiple-caption="{count} files selected" multiple="">
+      
+      <label for="files" id="filer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17"><path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"></path></svg><span>Choose a file…</span></label>
+
+      
+      <span class="readBytesButtons">
+        <button id="viewAll" on-tap="parseFile">View Import</button>
+      </span>
+
+      
+      <div id="byteContent"></div>
+
+      
+      <script>document.getElementById("files").onchange=function(){var e=this.files[0],t=new FileReader;t.onload=function(e){for(var t=this.result.split("\n"),n=0;n<t.length;n++)document.getElementById("byteContent").textContent+=t[n],document.getElementById("byteContent").textContent+=" "},t.readAsText(e)};</script>
+
     </div>
     <paper-toast id="errorToast">Oops, the puzzle isn't finished.</paper-toast>
     <paper-toast id="successToast">Congratulations!</paper-toast>
@@ -93,6 +205,17 @@
       is: 'sudoku-app',
 
       properties: {
+        solutionState: {
+          type: Boolean,
+          notify: true,
+          value: false
+        },
+        
+        solution: {
+          type: Array,
+          notify: true,
+        },
+        
         prop1: {
           type: String,
           value: 'sudoku-app',
@@ -117,41 +240,159 @@
           type: Number,
           value: null,
           notify: true,
-        }
+        },
         
+        solutions: {
+          type: Array,
+          value: [],
+          notify: true,
+        },
+
+        chkX: {
+          type: Boolean,
+          value: false,
+        },
+
+        chkY: {
+          type: Boolean,
+          value: false,
+        },
+
+        dimension: {
+          type: Number,
+          value: 9,
+        },
+
+        prevDim: {
+          type: Number,
+          value: 9,
+        },
+
+        difficulty: {
+          type: Number,
+          value: 20,
+        },
+
+        boardsFile: {
+          type: Array,
+          notify: true,
+        }
         
       },
       
       ready: function() {
-        // firebase.database().ref('/sudoku/count').transaction(function(val) {
-        //   if (val == 0) {
-        //     return null;
-        //   } else return val + 1;
-        // });
+        // console.log("READY");
       },
       
       randomize: function() {
         this.loading = !this.loading;
+        this.solutionState = false;
         this.$.sudokuElement.updating = !this.$.sudokuElement.updating;
         // this.$.sudokuElement.loading = !this.$.sudokuElement.loading;
         let w = new Worker("/src/js/worker.js");
-        w.postMessage([9,false,false,20]);
+        w.postMessage([this.dimension, this.chkX, this.chkY, this.difficulty]);
+
         w.onmessage = function(e) {
-          this.board = e.data;
-          this.$.sudokuElement.updateValues(this.board);  
+          this.board = generatePuzzle(e.data, this.difficulty);
+          // this.board = generatePuzzle(e.data, 0);
+          if(this.prevDim != this.dimension){
+            this.$.sudokuElement.reconstructBoard(this.board);  
+          }else{
+            this.$.sudokuElement.updateValues(this.board);  
+          }
+
           this.$.random.disabled = false;
           this.loading = !this.loading;
           this.$.sudokuElement.updating = !this.$.sudokuElement.updating;
           this.count++;
         }.bind(this);
+
+      },
+
+      parseFile: function(){
+        var fromFile = this.$.byteContent.textContent.trim(); // shorten line
+        
+        /* When the file is empty */
+        if(fromFile.length == 0){
+          // console.log("Why");     
+          return;     
+        }else{
+          /* When the file is not empty */
+          var tokens = fromFile.split(" "); // split by space
+          var NBoard = tokens[0]; // the number of boards present in the text file
+          var importBoards = new Array(NBoard);  // use as the holder of all of the imported boards
+          
+          /* create a 2d array for the foards */
+          for (var i = 1; i < tokens.length; i++) {
+            var sizeBoard = tokens[i]*tokens[i]; // the dimension
+            var row = new Array(sizeBoard); // the rows
+            for(var k = 0; k < sizeBoard; k++){
+              row[k] = new Array(sizeBoard); // the cols
+              for (var j = 0; j < sizeBoard; j++) {
+                row[k][j] = tokens[++i]; // save teh token 
+              }
+            }
+            importBoards[i] = row; // add the complete board to the array of boards
+          }
+        }
+
+        this.boardsFile = importBoards; // pass to properties
+        // console.log(this.boardsFile);
       },
       
       check: function() {
         //Load the current table to to a 2d array
-        if (this.$.sudokuElement.check(9, false, false)) {
+        if (this.$.sudokuElement.check(this.dimension, this.chkX, this.chkY) || this.solutionState) {
           this.$.successToast.open();
           this.randomize();
         } else this.$.errorToast.open();
+      },
+
+      toggleX: function(){
+         this.chkX = this.$.chkX.checked;
+      },
+
+      toggleY: function(){
+         this.chkY = this.$.chkY.checked;
+      },
+      
+      setDiff: function(){
+         this.difficulty = this.$.difficulty.value;
+      },
+
+      setDim: function(){
+         this.prevDim = this.dimension;
+         this.dimension = this.$.dimension.value;
+      },
+
+      solve: function() {
+        
+        // console.log("solve function");
+        let solver = new Worker("/src/js/worker2.js");
+        // console.log(this.$.sudokuElement.getBoard());
+        solver.postMessage([this.$.sudokuElement.getBoard(), this.chkX, this.chkY]);
+        solver.onmessage = function(e) {
+          // console.log(e.data);
+          this.solution = e.data;
+          // this.$.merc.data = this.solution;
+          this.solutionState = !this.solutionState;
+          // console.log(e.data[Math.floor(Math.random() * e.data.length)]);
+          var sampleBoard = e.data[0];
+          this.solutions = e.data;
+
+        }.bind(this);
+        // this.loading = !this.loading;
+        // let s = new Worker("/src/js/worker2.js");
+        // console.log(this.board);
+        
+        // var original_board = this.board.map(function(arr) {
+        //     return arr.slice();
+        // }).bind(this);;
+        
+        // s.postMessage(original_board,false,false);
+        // s.onmessage = function(e) {
+        //   this.solutions = e.data;
+        // };
       }
 
     });

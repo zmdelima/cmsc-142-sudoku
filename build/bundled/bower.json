@@ -7,7 +7,8 @@
     "paper-button": "PolymerElements/paper-button#^1.0.14",
     "paper-spinner": "PolymerElements/paper-spinner#^1.2.1",
     "paper-toast": "PolymerElements/paper-toast#^1.3.0",
-    "polymerfire": "firebase/polymerfire#^0.10.3"
+    "polymerfire": "firebase/polymerfire#^0.10.3",
+    "mercury-paginator": "^1.1.2"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

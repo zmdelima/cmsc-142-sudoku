@@ -29,7 +29,7 @@
 
 
 /* eslint-disable quotes, comma-spacing */
-var PrecacheConfig = [["/bower_components/webcomponentsjs/webcomponents-lite.min.js","02395895d5d08242c6ba93518a6da2c5"],["/index.html","916962400cb84e0b25511ef19c336ff8"],["/manifest.json","cf79e5afde070ed30957ca2703b38c4a"],["/src/sudoku-app/sudoku-app.html","e0ccb7a5a5b24e9bcc54b02549220ad9"]];
+var PrecacheConfig = [["/bower_components/webcomponentsjs/webcomponents-lite.min.js","02395895d5d08242c6ba93518a6da2c5"],["/index.html","916962400cb84e0b25511ef19c336ff8"],["/manifest.json","1c8509d8f80b7bbc8e392367fa4d18d5"],["/src/sudoku-app/sudoku-app.html","e7b4d42f9dcc138ff35f614e25591e27"]];
 /* eslint-enable quotes, comma-spacing */
 var CacheNamePrefix = 'sw-precache-v1--' + (self.registration ? self.registration.scope : '') + '-';
 
