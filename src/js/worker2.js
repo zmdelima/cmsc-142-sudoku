@@ -1,16 +1,4 @@
 "use strict";
-var original_board = [
-    [0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0],
-];
-
 var magic_board = [
     [1,0,0,0,2,0,0,0,4],
     [0,2,0,0,0,8,0,1,0],
@@ -22,13 +10,6 @@ var magic_board = [
     [0,9,0,0,8,0,0,7,0],
     [8,0,7,0,9,0,0,0,6]
 ];
-
-var four = [
-        [0,0,0,0],
-        [0,0,0,0],
-        [0,0,0,0],
-        [0,0,0,0]
-    ];
 
 var checkBox = function (board,row,col,val)  {
     let N = board.length;
@@ -54,8 +35,7 @@ var checkCol = function(board,col,val) {
 var checkY = function(board,row,col,val) {
     let N = board.length;
     let mid = Math.floor((N-1)/2);
-    if(board.length % 2 == 0) return true;
-    if(row < mid && (row != col && row != N-1-col)) return true;
+    if(row < mid && (row != col || row != N-1-col)) return true;
     if(row >= mid && col != mid) return true;
     for (let i=mid;i<N;i++) if (board[i][mid] == val) return false;
     if (col <= mid) {
@@ -69,8 +49,8 @@ var checkY = function(board,row,col,val) {
 
 var checkX = function (board,row,col,val) {
     let N = board.length;
-    let mid = Math.floor((N-1)/2);
-    if (row != col && col+row != N-1) return true;
+    let mid = Math.floor(N/2);
+    if (row != col || col+row != N-1) return true;
     if (row <= mid && row == col) {
         for (let i=0;i<N;i++) if (board[i][i] == val) return false; 
     }
@@ -85,52 +65,17 @@ var checker = function(board,row,col,val,chkX,chkY){
     let yChk = checkY(board,row,col,val);
     let chk = checkRow(board,row,val) && checkCol(board,col,val) && checkBox(board,row,col,val);
     if (chkX) chk = chk && xChk;
-    if (chkY && (board.length%2 == 1) ) chk = chk && yChk;
+    if (chkY) chk = chk && yChk;
     return chk;
 }
 
-var viewBoard = function(board) {
-    for(var i=0; i<board.length; i++) {
-        console.log(board[i]);
-    }
-}
-
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
-}
-
-function generateRange(dim) {
-    var x = new Array(dim);
-    var current;
-    for (var i=0; i<dim; i++) {
-        do {
-            current = getRandomInt(1, dim+1);
-        } while (x.indexOf(current) != -1);
-        
-        x[i] = current;
-    }
-    return x;
-}
-
-var generateBoard = function(dim, chkX, chkY) {
-    if (Math.sqrt(dim) % 1 != 0) {
-        return;
-    }
-
-    var board = magic_board;
-    
-    if(dim == 4){
-        var solutiN = solver(four,chkX,false);
-        board = oneSolution( solutiN );
-    }else {
-        var solutiN = solver(magic_board,chkX,chkY);
-        board = oneSolution( solutiN );
-    }
-   
-    return board;
+var magic_solver = function(checkX,checkY){
+    return solver(magic_board, checkX, checkY);
 }
 
 var solver = function(original_board,checkX,checkY){
+    // console.log(original_board);
+    
     let N = original_board.length;
     var board = original_board.map(function(arr) {
         return arr.slice();
@@ -150,7 +95,7 @@ var solver = function(original_board,checkX,checkY){
                 //mode == true then backtracking
                 if (mode) {
                     if (mode && x< 0) {
-                        console.log("COUNT"+count);
+                        // console.log("COUNT"+count);
                         // console.log(solutions[0]);
                         return solutions;
                     }
@@ -189,6 +134,7 @@ var solver = function(original_board,checkX,checkY){
                     }
                     continue;
                 }
+                
                 y++;
             }
             y=0;
@@ -205,32 +151,19 @@ var solver = function(original_board,checkX,checkY){
         x--;
         y=N-1;
         continue;
-    }   
-}
-
-
-var oneSolution = function(solutions){
-    return solutions[Math.floor(Math.random() * solutions.length)];
-}
-
-var generatePuzzle = function (board, difficulty) {
-    for (var i=0; i<board.length; i++) {
-        for (var j=0; j<board.length; j++) {
-            if(getRandomInt(0, 100) < difficulty) {
-                board[i][j] = 0;
-            }
-        }
     }
     
-    // viewBoard(board);
-    return board;
+}
+
+var oneSolution = function(solutions){
+    console.log(solutions[Math.floor(Math.random() * solutions.length)]);
 }
 
 onmessage = function(e) {
     // console.log("received "+e.data[0]);
-    var temp = generateBoard(e.data[0], e.data[1], e.data[2]);
-    // console.log(temp);
-    
-    // postMessage( generatePuzzle(temp, e.data[3]) );
-    postMessage(temp);
+    console.log("@solver");
+    console.log("board");
+    // console.log(e.data);
+    // console.log(oneSolution(solver(e.data[0], e.data[1], e.data[2])));
+    postMessage(solver(e.data[0], e.data[1], e.data[2]));
 }
