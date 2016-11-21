@@ -150,7 +150,7 @@ var solver = function(original_board,checkX,checkY){
                 //mode == true then backtracking
                 if (mode) {
                     if (mode && x< 0) {
-                        console.log("COUNT"+count);
+                        // console.log("COUNT"+count);
                         // console.log(solutions[0]);
                         return solutions;
                     }
