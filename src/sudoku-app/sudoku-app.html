@@ -67,6 +67,52 @@
          *width: 100px;
          *background: #58B14C;
       }
+
+      .inputfile {
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        position: absolute;
+        z-index: -1;
+      }
+      
+      .inputfile + label {
+        font-size: 1.25em;
+        font-weight: 700;
+        color: white;
+        background-color: black;
+        display: inline-block;
+      }
+
+      .inputfile:focus + label,
+      .inputfile + label:hover {
+          background-color: #722040;
+      }
+
+      .inputfile + label {
+        color: #f1e5e6;
+        background-color: maroon;
+        cursor: pointer; /* "hand" cursor */
+         
+        max-width: 80%;
+        font-size: 1.25rem;
+        /* 20px */
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
+        display: inline-block;
+        /*overflow: hidden;*/
+        padding: 0.625rem 1.25rem;
+        /* 10px 20px */
+      }
+
+      .inputfile:focus + label {
+        outline: 1px dotted #000;
+        outline: -webkit-focus-ring-color auto 5px;
+      }
+
       /*.button {*/
       /*  background-color: maroon;*/
       /*  color: white;*/
@@ -84,7 +130,24 @@
       
       .button-set {
         margin: auto;
-        width: 100%;7
+        width: 100%;
+      }
+
+      #byteContent {
+        margin: 5px 0;
+        max-height: 100px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        visibility: hidden;
+      }
+      
+      #viewAll {
+        border: 0px;
+        height: 47px;
+        width: 150px;
+        color: #f1e5e6;
+        font-size: 1.25rem;
+        background-color: maroon;
       }
     </style>
     <h1 class="title" align="center">sudoku</h1>
@@ -92,7 +155,7 @@
     <h3 class="count" align="center"># {{count}}</h3>
     <br>
     <div class="container">
-      <sudoku-table id="sudokuElement" board="[[board]]" loading="{{loading}}" count="{{count}}">
+      <sudoku-table id="sudokuElement" board="[[board]]" loading="{{loading}}" count="{{count}}" ndim="{{dimension}}">
       
       </sudoku-table>
       <br>
@@ -107,9 +170,50 @@
       </select>
       <label><input type="checkbox" id="chkX" on-tap="toggleX">Check X</label>
       <label><input type="checkbox" id="chkY" on-tap="toggleY">Check Y</label>
+      <br>
+      <br>
       <paper-button hidden$="{{loading}}" on-tap="randomize" id="random" class="button" disabled$={{loading}} raised>Random</paper-button>
       <paper-button hidden$="{{loading}}" on-tap="check" id="check" class ="button" raised>Check</paper-button>
       <paper-button hidden$="{{loading}}" on-tap="solve" id="solve" class="button" disabled$={{loading}} raised>Solve</paper-button>
+      <br>
+      <br>
+      
+      <!-- Create the input button -->
+      <input type="file" name="file-1[]" id="files" class="inputfile inputfile-1" data-multiple-caption="{count} files selected" multiple />
+      <!-- Label used for input button -->
+      <label for="files" id="filer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17"><path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"/></svg><span>Choose a file&hellip;</span></label>
+
+      <!-- Button for parsing the file input -->
+      <span class="readBytesButtons">
+        <button id="viewAll" on-tap="parseFile">View Import</button>
+      </span>
+
+      <!-- (Required) the output div. This div holds the whole text from the file -->
+      <div id="byteContent"></div>
+
+      <!-- Don't remove (onchange of null) -->
+      <script>
+        document.getElementById('files').onchange = function(){ // After selecting the file
+          var file = this.files[0]; // for easy typing
+
+          var reader = new FileReader(); // new FileReader.
+
+          reader.onload = function(progressEvent){ // when loading the file
+            // Entire file
+            // console.log(this.result);
+
+            // By lines
+            var lines = this.result.split('\n'); // parse by line
+            for(var line = 0; line < lines.length; line++){ // for each line
+              // console.log(lines[line]);
+              document.getElementById('byteContent').textContent += lines[line]; // append the values in byteContent
+              document.getElementById('byteContent').textContent += " "; // append a space which will be used as a delimiter later
+            }
+          };
+          reader.readAsText(file); // read as text
+        };
+      </script>
+
     </div>
     <paper-toast id="errorToast">Oops, the puzzle isn't finished.</paper-toast>
     <paper-toast id="successToast">Congratulations!</paper-toast>
@@ -168,9 +272,19 @@
           value: 9,
         },
 
+        prevDim: {
+          type: Number,
+          value: 9,
+        },
+
         difficulty: {
           type: Number,
           value: 20,
+        },
+
+        boardsFile: {
+          type: Array,
+          notify: true,
         }
         
       },
@@ -185,14 +299,53 @@
         // this.$.sudokuElement.loading = !this.$.sudokuElement.loading;
         let w = new Worker("/src/js/worker.js");
         w.postMessage([this.dimension, this.chkX, this.chkY, this.difficulty]);
+
         w.onmessage = function(e) {
           this.board = generatePuzzle(e.data, this.difficulty);
-          this.$.sudokuElement.updateValues(this.board);  
+          // this.board = generatePuzzle(e.data, 0);
+          if(this.prevDim != this.dimension){
+            this.$.sudokuElement.reconstructBoard(this.board);  
+          }else{
+            this.$.sudokuElement.updateValues(this.board);  
+          }
+
           this.$.random.disabled = false;
           this.loading = !this.loading;
           this.$.sudokuElement.updating = !this.$.sudokuElement.updating;
           this.count++;
         }.bind(this);
+
+      },
+
+      parseFile: function(){
+        var fromFile = this.$.byteContent.textContent.trim(); // shorten line
+        
+        /* When the file is empty */
+        if(fromFile.length == 0){
+          console.log("Why");     
+          return;     
+        }else{
+          /* When the file is not empty */
+          var tokens = fromFile.split(" "); // split by space
+          var NBoard = tokens[0]; // the number of boards present in the text file
+          var importBoards = new Array(NBoard);  // use as the holder of all of the imported boards
+          
+          /* create a 2d array for the foards */
+          for (var i = 1; i < tokens.length; i++) {
+            var sizeBoard = tokens[i]*tokens[i]; // the dimension
+            var row = new Array(sizeBoard); // the rows
+            for(var k = 0; k < sizeBoard; k++){
+              row[k] = new Array(sizeBoard); // the cols
+              for (var j = 0; j < sizeBoard; j++) {
+                row[k][j] = tokens[++i]; // save teh token 
+              }
+            }
+            importBoards[i] = row; // add the complete board to the array of boards
+          }
+        }
+
+        this.boardsFile = importBoards; // pass to properties
+        console.log(this.boardsFile);
       },
       
       check: function() {
@@ -216,6 +369,7 @@
       },
 
       setDim: function(){
+         this.prevDim = this.dimension;
          this.dimension = this.$.dimension.value;
       },
 
