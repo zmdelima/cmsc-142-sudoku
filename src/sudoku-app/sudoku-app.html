@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../../bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="../../bower_components/mercury-paginator/mercury-paginator.html">
 
 <dom-module id="sudoku-app">
   <template>
@@ -155,9 +156,16 @@
     <h3 class="count" align="center"># {{count}}</h3>
     <br>
     <div class="container">
-      <sudoku-table id="sudokuElement" board="[[board]]" loading="{{loading}}" count="{{count}}" ndim="{{dimension}}">
+      <sudoku-table hidden$={{solutionState}} id="sudokuElement" board="[[board]]" loading="{{loading}}" count="{{count}}" ndim="{{dimension}}">
       
       </sudoku-table>
+      
+      <template is="dom-repeat" items="{{solution}}">
+        <sudoku-table hidden$="{{!solutionState}}" board="{{item}}"></sudoku-table>
+        <br>
+      </template>
+      <!--<mercury-paginator hidden$="{{!solutionState}}" id="merc" perpage="1" show-first show-last items="{{solution}}"></mercury-paginator>-->
+      
       <br>
       <select hidden$="{{loading}}" on-change="setDim" value$="{{dimension}}" id="dimension" disabled$={{loading}}>
         <option value="4" >4 x 4</option> 
@@ -225,6 +233,17 @@
       is: 'sudoku-app',
 
       properties: {
+        solutionState: {
+          type: Boolean,
+          notify: true,
+          value: false
+        },
+        
+        solution: {
+          type: Array,
+          notify: true,
+        },
+        
         prop1: {
           type: String,
           value: 'sudoku-app',
@@ -295,6 +314,7 @@
       
       randomize: function() {
         this.loading = !this.loading;
+        this.solutionState = false;
         this.$.sudokuElement.updating = !this.$.sudokuElement.updating;
         // this.$.sudokuElement.loading = !this.$.sudokuElement.loading;
         let w = new Worker("/src/js/worker.js");
@@ -350,7 +370,7 @@
       
       check: function() {
         //Load the current table to to a 2d array
-        if (this.$.sudokuElement.check(this.dimension, this.chkX, this.chkY)) {
+        if (this.$.sudokuElement.check(this.dimension, this.chkX, this.chkY) || this.solutionState) {
           this.$.successToast.open();
           this.randomize();
         } else this.$.errorToast.open();
@@ -374,17 +394,21 @@
       },
 
       solve: function() {
+        
         // console.log("solve function");
         let solver = new Worker("/src/js/worker2.js");
         // console.log(this.$.sudokuElement.getBoard());
         solver.postMessage([this.$.sudokuElement.getBoard(), this.chkX, this.chkY]);
         solver.onmessage = function(e) {
-          // console.log(e.data);
+          console.log(e.data);
+          this.solution = e.data;
+          // this.$.merc.data = this.solution;
+          this.solutionState = !this.solutionState;
           console.log(e.data[Math.floor(Math.random() * e.data.length)]);
           var sampleBoard = e.data[0];
           this.solutions = e.data;
 
-        }
+        }.bind(this);
         // this.loading = !this.loading;
         // let s = new Worker("/src/js/worker2.js");
         // console.log(this.board);

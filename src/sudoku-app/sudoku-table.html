@@ -37,6 +37,11 @@
         Polymer({
            is: 'sudoku-table',
            properties: {
+               viewboard: {
+                   type: Array,
+                   notify: true,
+                   value: false
+               },
                board: {
                    type: Array,
                    notify: true,
@@ -93,7 +98,11 @@
               w.postMessage([this.dimension, this.chkX, this.chkY, this.difficulty]);
               
               w.onmessage = function(e) {
-                  this.board = generatePuzzle(e.data, this.difficulty);
+                  if(this.board == null) {
+                      this.board = generatePuzzle(e.data, this.difficulty);
+                      console.log("board was empty");
+                  }
+                  
                   // this.board = generatePuzzle(e.data, 0);
                   this.reconstructBoard(this.board);
                   this.loading = false;

@@ -1,0 +1,41 @@
+{
+  "name": "mercury-paginator",
+  "version": "1.1.2",
+  "authors": [
+    "BQ"
+  ],
+  "description": "A polymer element providing a solution to paginate list.",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "paginator",
+    "paginate",
+    "pagination"
+  ],
+  "main": "mercury-paginator.html",
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/bquarks/mercury-paginator",
+  "ignore": [
+    "/.*",
+    "/test/",
+    "/demo/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.6"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "*"
+  },
+  "_release": "1.1.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.1.2",
+    "commit": "6d8f8d9a7f2abaa63a9f2a954c653389c9d0355f"
+  },
+  "_source": "https://github.com/bquarks/mercury-paginator.git",
+  "_target": "^1.1.2",
+  "_originalSource": "mercury-paginator",
+  "_direct": true
+}
