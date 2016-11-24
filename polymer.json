@@ -2,7 +2,7 @@
   "entrypoint": "index.html",
   "shell": "src/sudoku-app/sudoku-app.html",
   "fragments": [
-    
+    "src/sudoku-app/sudoku-table.html"
   ],
   "sourceGlobs": [
    "src/**/*",
