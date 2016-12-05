@@ -1,0 +1,109 @@
+<html><head><link rel="import" href="../polymer/polymer.html">
+
+</head><body><dom-module id="mercury-paginator">
+
+    <template>
+
+        <style>
+            :host {
+                display: block;
+                position: relative;
+                text-align: var(--mercury-paginator-alignment, center);
+                @apply(--mercury-paginator);
+            }
+
+            .pagination {
+                display: inline-block;
+                list-style: none;
+                margin: var(--mercury-paginator-margin, 1rem);
+                padding: var(--mercury-paginator-padding, 1em);
+                vertical-align: middle;
+                word-spacing: -5px;
+            }
+
+            .pagination li {
+                display: inline-block;
+                font-size: var(--mercury-paginator-font-size, 1em);
+                vertical-align: middle;
+                word-spacing: normal;
+                @apply(--mercury-paginator-item);
+            }
+
+            .pagination li.active a {
+                background-color: var(--mercury-paginator-item-selected-bg-color, #2BA6CB);
+                color: var(--mercury-paginator-item-selected-color, white);
+                text-decoration: none;
+                @apply(--mercury-paginator-link-selected);
+            }
+
+            .pagination li.disabled a,
+            .pagination li.disabled a:hover {
+                background-color: var(--mercury-paginator-item-disabled-bg-color, #F5F5F5);
+                color: var(--mercury-paginator-item-disabled-bg-color, #CCCCCC);
+                cursor: default;
+                @apply(--mercury-paginator-link-disabled);
+            }
+
+            .pagination a {
+                background-color: var(--mercury-paginator-item-bg-color, white);
+                border: var(--mercury-paginator-item-border, 1px solid #EEEEEE);
+                color: var(--mercury-paginator-item-color, #2BA6CB);
+                cursor: pointer;
+                display: inline-block;
+                line-height: normal;
+                font-weight: var(--mercury-paginator-item-font-weight, normal);
+                padding: var(--mercury-paginator-item-padding, 0.5em 1em);
+                text-decoration: none;
+                -webkit-transition: var(--mercury-paginator-item-transition, background-color 0.3s ease-in);
+                transition: var(--mercury-paginator-item-transition, background-color 0.3s ease-in);
+                @apply(--mercury-paginator-link);
+            }
+
+
+            .pagination a:hover,
+            .pagination a:focus {
+                background-color: var(--mercury-paginator-item-hover-bg-color, #F5F5F5);
+                color: var(--mercury-paginator-item-hover-color, #2BA6CB);
+                @apply(--mercury-paginator-link-hover);
+            }
+
+            .pagination a:active {
+                background-color: var(--mercury-paginator-item-active-bg-color, #EEEEEE);
+                @apply(--mercury-paginator-link-active);
+            }
+
+        </style>
+
+        <ul id="paginationlist" class="pagination">
+            <template is="dom-if" if="{{showFirst}}">
+                <li><a on-tap="firstPage">First</a></li>
+            </template>
+
+                <li class$="{{disablePrev}}">
+                    <a on-tap="prevPage">{{previous}}</a>
+                </li>
+
+            <template is="dom-repeat" items="{{currentRange}}">
+                <li class$="{{itemClass(item)}}" data-item="{{item}}" on-tap="setPage">
+                    <a>{{pageNum(item)}}</a>
+                </li>
+            </template>
+
+            <li class$="{{disableNext}}">
+                <a on-tap="nextPage">{{next}}</a>
+            </li>
+
+            <template is="dom-if" if="{{showLast}}">
+                <li><a on-tap="lastPage">Last</a></li>
+            </template>
+
+            <content></content>
+
+        </ul>
+
+  </template>
+
+</dom-module>
+
+<script>"use strict";Polymer({is:"mercury-paginator",properties:{perpage:{type:Number,value:10},currentpage:{type:Number,value:0,notify:!0},currentRange:{type:Array,value:[]},customTemplate:{type:Boolean,value:!1},pageCount:{type:Number,value:0},rangeSize:{type:Number,value:7},items:{type:Array,value:[],notify:!0},data:{type:Array,value:[],notify:!0,observer:"_dataChanged"},previous:{type:String,value:"<"},next:{type:String,value:">"},showFirst:{type:Boolean,value:!1},showLast:{type:Boolean,value:!1},disableNext:{type:String,computed:"_disableNextBtn(currentpage, pageCount)"},disablePrev:{type:String,computed:"_disablePrevBtn(currentpage, pageCount)"},adjacents:{type:Number,value:3}},observers:["_currentPageChanged(data, currentpage)"],_disablePrevBtn:function(e){return 0===e?"disabled":""},_disableNextBtn:function(e,t){return e===t?"disabled":""},itemClass:function(e){return e===this.currentpage?"active":""},_dataChanged:function(){this.currentRange=this.range(),this.pageCount=this.getPageCount(),this.count||this.set("items",this.filterPage())},pageNum:function(e){return e+1},firstPage:function(){this.currentpage=0},lastPage:function(){this.currentpage=this.pageCount},prevPage:function(){this.currentpage>0&&(this.currentpage--,this.fire("pager-previous",{page:this.currentpage}))},nextPage:function(){this.currentpage<this.getPageCount()&&(this.currentpage++,this.fire("pager-next",{page:this.currentpage}))},setPage:function(e){this.currentpage=parseInt(e.model.item,10)},getPageCount:function(){return this.count?Math.ceil(this.count/this.perpage)-1:Math.ceil(this.data.length/this.perpage)-1},_currentPageChanged:function(){this.count||this.set("items",this.filterPage()),this.currentRange=this.range(),this.toogleActive(),this.fire("pager-change",{page:this.currentpage,pagesize:this.perpage,data:this.items})},range:function(){var e,t=[],a=this.getPageCount();if(a-1<this.rangeSize+2*this.adjacents)for(e=0;e<=a;e++)t.push(e);else if(a-1>this.rangeSize+2*this.adjacents)if(this.currentpage<1+2*this.adjacents)for(e=0;e<this.rangeSize;e++)t.push(e);else if(a-this.adjacents>this.currentpage&&this.currentpage>2*this.adjacents)for(e=this.currentpage-this.adjacents;e<=this.currentpage+this.adjacents;e++)t.push(e);else for(e=a-2*this.adjacents;e<=a;e++)t.push(e);return t},filterPage:function(){return this.data.slice(this.currentpage*this.perpage,this.currentpage*this.perpage+this.perpage)},toogleActive:function(){var e=this.$.paginationlist.children;this.clearActive(e),this.applyActive(e)},clearActive:function(e){for(var t=0;t<e.length;t++)Polymer.dom(e[t]).classList.remove("active")},applyActive:function(e){for(var t=0;t<e.length;t++)if(e[t].dataItem===this.currentpage){Polymer.dom(e[t]).classList.add("active");break}}});</script>
+</body></html>
